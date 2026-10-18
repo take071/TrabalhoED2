@@ -12,7 +12,7 @@
 > **Colegiado:** Bacharelado em Sistemas de Informação  
 > **Disciplina:** Estruturas de Dados II  
 > **Docente:** Profa. Maria Inés Restovic  
-> **Equipe:** Arthur Felipe, Lucas Vinicius, Raphael Lopes  
+> **Equipe:** Arthur Felipe, Lucas Vinicius, Raphael Lopes
 
 ---
 
@@ -22,8 +22,8 @@
 | :--- | :--- | :---: | :---: |
 | **Estrutura de Dados** | [`estruturas/tabela_hash.py`](estruturas/tabela_hash.py) | ✅ Concluído | **100%** |
 | **Controlador & Persistência** | [`app.py`](app.py) + [`arquivos/paises.json`](arquivos/paises.json) | ⏳ A implementar | **25%** |
-| **Interface do Usuário** | [`templates/`](templates/) (Bootstrap 5 + Jinja2) | ⏳ A implementar | **100%** |
-| **Estilização & Identidade Visual** | [`static/`](static/) | ⏳ A implementar | **100%** |
+| **Interface do Usuário** | [`templates/`](templates/) (Bootstrap 5 + Jinja2) | ✅ Concluído | **100%** |
+| **Estilização & Identidade Visual** | [`static/`](static/) | ✅ Concluído | **100%** |
 
 ---
 
