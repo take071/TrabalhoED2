@@ -195,5 +195,11 @@ def instrumentacao():
     return render_template("instrumentacao.html", metricas=metricas)
 
 
+@app.route("/design-system")
+def design_system():
+    """Exibe o catálogo visual de tokens, cores e componentes do GlobalSIM."""
+    return render_template("design_system.html")
+
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)

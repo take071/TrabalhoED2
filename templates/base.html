@@ -3,103 +3,144 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}GlobalSIM — Gestão de eSIM & Roteamento{% endblock %}</title>
+  <title>{% block title %}GlobalSIM · Internet Móvel Internacional & Roteamento{% endblock %}</title>
+
+  <!-- Google Fonts: Inter, Plus Jakarta Sans, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <!-- Estilos Customizados -->
+  <!-- Design System CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-  <!-- Barra de Navegação -->
-  <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
-    <div class="container">
-      <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('index') }}">
-        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="GlobalSIM Logo" onerror="this.style.display='none'">
-        <span class="fw-bold fs-4 text-white">Global<span class="text-info">SIM</span></span>
-      </a>
+  <!-- Navegação Principal -->
+  <header class="sticky-top site-nav">
+    <nav class="navbar navbar-expand-lg navbar-dark py-2">
+      <div class="container">
+        
+        <!-- Logotipo e Brand Mark -->
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('index') }}" aria-label="GlobalSIM Home">
+          <span class="brand-mark">
+            <span class="brand-chip">
+              <span class="brand-chip-pin"></span>
+              <span class="brand-chip-pin"></span>
+              <span class="brand-chip-pin"></span>
+              <span class="brand-chip-pin"></span>
+            </span>
+            <span class="brand-dot"></span>
+          </span>
+          <span class="fw-bold fs-5 text-white font-heading tracking-tight">
+            Global<span style="color: var(--sky);">SIM</span>
+          </span>
+        </a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Alternar navegação">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+        <!-- Botão Mobile -->
+        <button class="navbar-toggler border-0 shadow-none text-slate-300" type="button" data-bs-toggle="collapse" data-bs-target="#navGlobalSIM" aria-controls="navGlobalSIM" aria-expanded="false" aria-label="Menu de Navegação">
+          <i class="bi bi-list fs-3"></i>
+        </button>
 
-      <div class="collapse navbar-collapse" id="navMenu">
-        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-          <li class="nav-item">
-            <a class="nav-link px-3 {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">
-              <i class="bi bi-house-door me-1"></i> Início
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link px-3 {% if request.endpoint == 'cobertura' %}active{% endif %}" href="{{ url_for('cobertura') }}">
-              <i class="bi bi-search me-1"></i> Consulta de Cobertura
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link px-3 {% if request.endpoint == 'paises' %}active{% endif %}" href="{{ url_for('paises') }}">
-              <i class="bi bi-globe-americas me-1"></i> Países Atendidos
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link px-3 {% if request.endpoint == 'instrumentacao' %}active{% endif %}" href="{{ url_for('instrumentacao') }}">
-              <i class="bi bi-cpu me-1"></i> Instrumentação Hash
-            </a>
-          </li>
-        </ul>
+        <!-- Links da Navegação -->
+        <div class="collapse navbar-collapse" id="navGlobalSIM">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">
+                Início
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'cobertura' %}active{% endif %}" href="{{ url_for('cobertura') }}">
+                Cobertura
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'paises' %}active{% endif %}" href="{{ url_for('paises') }}">
+                Países
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'instrumentacao' %}active{% endif %}" href="{{ url_for('instrumentacao') }}">
+                Instrumentação
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'design_system' %}active{% endif %}" href="{{ url_for('design_system') }}">
+                Design System
+              </a>
+            </li>
+          </ul>
+
+          <!-- Indicador de Status Operacional -->
+          <div class="d-none d-lg-flex align-items-center gap-2">
+            <span class="d-inline-flex align-items-center gap-2 rounded-pill px-3 py-1 font-mono" style="background: rgba(0, 210, 255, 0.1); border: 1px solid rgba(0, 210, 255, 0.25); color: var(--cyan); font-size: 0.75rem; font-weight: 600;">
+              <span class="rounded-circle" style="width: 7px; height: 7px; background-color: var(--cyan); box-shadow: 0 0 6px var(--cyan);"></span>
+              Rede operacional
+            </span>
+          </div>
+        </div>
+
       </div>
-    </div>
-  </nav>
+    </nav>
+  </header>
 
-  <!-- Container de Mensagens Flash -->
+  <!-- Mensagens Flash -->
   <div class="container mt-3">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
-          <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show shadow-sm" role="alert">
-            <div class="d-flex align-items-center">
-              {% if category == 'success' %}
-                <i class="bi bi-check-circle-fill me-2 fs-5"></i>
-              {% elif category == 'danger' or category == 'error' %}
-                <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
-              {% elif category == 'warning' %}
-                <i class="bi bi-exclamation-circle-fill me-2 fs-5"></i>
-              {% else %}
-                <i class="bi bi-info-circle-fill me-2 fs-5"></i>
-              {% endif %}
-              <div>{{ message }}</div>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+          <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show card-gs border-0 shadow-sm py-3 px-4 d-flex align-items-center gap-3" role="alert">
+            {% if category == 'success' %}
+              <i class="bi bi-check-circle-fill fs-5 text-success"></i>
+            {% elif category == 'danger' or category == 'error' %}
+              <i class="bi bi-exclamation-octagon-fill fs-5 text-danger"></i>
+            {% elif category == 'warning' %}
+              <i class="bi bi-exclamation-triangle-fill fs-5 text-warning"></i>
+            {% else %}
+              <i class="bi bi-info-circle-fill fs-5 text-info"></i>
+            {% endif %}
+            <div class="small fw-medium">{{ message }}</div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Fechar"></button>
           </div>
         {% endfor %}
       {% endif %}
     {% endwith %}
   </div>
 
-  <!-- Conteúdo Principal -->
-  <main class="container my-4 flex-grow-1">
+  <!-- Área de Conteúdo -->
+  <main class="flex-grow-1">
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Rodapé Institucional -->
-  <footer class="py-4 border-top border-secondary">
+  <!-- Rodapé Institucional Minimalista -->
+  <footer class="site-footer py-4">
     <div class="container">
-      <div class="row gy-3 align-items-center">
-        <div class="col-md-6 text-center text-md-start">
-          <p class="mb-1 fw-bold text-white">GlobalSIM &bull; Gestão de eSIM Internacional</p>
-          <small class="text-secondary d-block">
-            UNEB — Estruturas de Dados II &bull; Docente: Profa. Maria Inés Restovic
-          </small>
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+        <div class="d-flex align-items-center gap-2">
+          <span class="brand-mark" style="width: 24px; height: 24px; border-radius: 6px;">
+            <span class="brand-chip" style="width: 12px; height: 12px;">
+              <span class="brand-chip-pin"></span>
+              <span class="brand-chip-pin"></span>
+              <span class="brand-chip-pin"></span>
+              <span class="brand-chip-pin"></span>
+            </span>
+          </span>
+          <span class="small text-slate-300 font-heading fw-bold">GlobalSIM</span>
+          <span class="text-secondary small">&bull; UNEB &bull; Estruturas de Dados II</span>
         </div>
-        <div class="col-md-6 text-center text-md-end">
-          <small class="text-secondary">
-            Equipe: <strong class="text-light">Arthur Felipe</strong>, <strong class="text-light">Lucas Vinicius</strong>, <strong class="text-light">Raphael Lopes</strong>
-          </small>
-          <div class="mt-1">
-            <span class="badge bg-primary bg-opacity-25 text-info border border-info border-opacity-25">Etapa 1: Tabela Hash</span>
-          </div>
+        
+        <div class="small text-secondary font-mono">
+          Arthur Felipe &bull; Lucas Vinicius &bull; Raphael Lopes
+        </div>
+
+        <div>
+          <span class="badge" style="background: rgba(255,255,255,0.06); color: #94a3b8; font-family: var(--font-mono); font-size: 0.7rem;">
+            Tabela Hash &bull; O(1)
+          </span>
         </div>
       </div>
     </div>
@@ -110,4 +151,3 @@
   {% block scripts %}{% endblock %}
 </body>
 </html>
-
