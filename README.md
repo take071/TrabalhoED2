@@ -43,47 +43,37 @@ O sistema receberá o roteiro do usuário (países de destino, quantidade de dia
 
 ---
 
-## 3. Estrutura de Diretórios
+## 3. Estrutura de Diretórios (Etapa 1)
 
-O projeto segue a divisão recomendada para o trabalho:
+O projeto é construído de forma incremental. Nesta primeira etapa, a estrutura foca na **Tabela Hash** e nos arquivos de países, mantendo os diretórios preparados para os próximos módulos:
 
 ```text
 Trabalho-ED2/
-├── app.py                     # Aplicação Flask e rotas do sistema
+├── app.py                     # Aplicação Flask e rotas da Etapa 1
 ├── shell.nix                  # Configuração de ambiente para Nix/NixOS
 ├── requirements.txt           # Dependências do projeto (Flask)
-├── README.md                  # Documentação do projeto
+├── README.md                  # Documentação e relatório do projeto
 │
-├── estruturas/                # Implementações das estruturas de dados
+├── estruturas/                # Implementação das estruturas de dados
 │   ├── __init__.py
-│   ├── tabela_hash.py         # Implementação da Tabela Hash com instrumentação
-│   ├── arvore_b.py            # Implementação da Árvore B
-│   ├── grafo.py               # Grafo com algoritmos BFS, DFS e Dijkstra
-│   └── recomendador.py        # Algoritmo de recomendação de pacotes por roteiro
+│   └── tabela_hash.py         # [Etapa 1] Tabela Hash própria com instrumentação
 │
-├── arquivos/                  # Arquivos JSON de persistência
-│   ├── paises.json            # Dados dos países atendidos
-│   ├── clientes.json          # Registros de clientes e eSIMs
-│   ├── pacotes.json           # Pacotes de dados disponíveis
-│   └── rede.json              # Topologia de rede e latências
+├── arquivos/                  # Persistência em disco (JSON)
+│   └── paises.json            # [Etapa 1] Base de dados dos países atendidos
 │
-├── templates/                 # Páginas HTML (templates Jinja / Bootstrap)
-│   ├── base.html              # Template base com menu e estrutura comum
-│   ├── index.html             # Página inicial
-│   ├── paises.html            # Gerenciamento de países (Etapa 1)
-│   ├── cobertura.html         # Consulta de cobertura por código (Etapa 1)
-│   ├── clientes.html          # Gerenciamento de clientes (Etapa 2)
-│   ├── rede.html              # Visualização da rede e rotas (Etapa 3)
-│   ├── consulta.html          # Consulta integrada
-│   ├── recomendador.html      # Interface do diferencial de recomendação
-│   └── instrumentacao.html    # Visualização interna das estruturas (métricas/buckets)
+├── templates/                 # Templates Jinja2 (a serem desenvolvidos na Etapa 1)
+│   └── .gitkeep
 │
-└── static/
+└── static/                    # Arquivos estáticos (CSS, JS, Imagens)
     ├── css/
-    │   └── style.css          # Folhas de estilo da aplicação
+    │   └── .gitkeep
+    ├── img/
+    │   └── .gitkeep
     └── js/
-        └── main.js            # Scripts de apoio da interface
+        └── .gitkeep
 ```
+
+*Nota: Os módulos das etapas seguintes (`arvore_b.py`, `clientes.json`, `pacotes.json`, `grafo.py`, `rede.json` e o `recomendador.py`) serão adicionados e integrados incrementalmente nas Etapas 2 e 3.*
 
 ---
 

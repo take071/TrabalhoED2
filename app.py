@@ -1,18 +1,15 @@
 """
-Aplicação Principal - GlobalSIM
+Aplicação Principal - GlobalSIM (Etapa 1)
 Disciplina: Estruturas de Dados II - UNEB
 Docente: Profa. Maria Inés Restovic
 Equipe: Arthur Felipe, Lucas Vinicius, Raphael Lopes
 
-Descrição:
-Controlador Web utilizando Flask. Gerencia as rotas, renderização de templates Jinja
-e integração com as estruturas de dados puras implementadas no diretório 'estruturas/'.
-
-Regras do Trabalho:
-- Não utilizar listas ou dicionários em substituição às estruturas de dados principais.
-- Rotas que modificam dados devem utilizar o método POST (padrão Post/Redirect/Get).
-- Carregar dados dos arquivos JSON nas estruturas em memória na inicialização.
-- Persistir alterações de volta aos arquivos JSON.
+Escopo da Etapa 1:
+- Tabela Hash própria para gerenciamento dos países atendidos.
+- Consulta rápida de cobertura por código do país (ex: "BR", "IT").
+- CRUD completo de países atendidos com persistência em arquivos/paises.json.
+- Painel de instrumentação básica da estrutura (capacidade, colisões, fator de carga).
+- Rotas de alteração de dados utilizando método POST (padrão Post/Redirect/Get).
 """
 
 import os
@@ -20,61 +17,54 @@ import json
 from flask import Flask, render_template, request, redirect, url_for, flash
 
 from estruturas.tabela_hash import TabelaHash
-# Imports das próximas etapas:
-# from estruturas.arvore_b import ArvoreB
-# from estruturas.grafo import GrafoRede
-# from estruturas.recomendador import recomendar_pacote
 
 app = Flask(__name__)
 app.secret_key = "globalsim-ed2-secret-key"
 
-# Caminhos dos arquivos de persistência JSON
+# Caminho para o arquivo de persistência dos países (Etapa 1)
 PAISES_JSON_PATH = os.path.join(os.path.dirname(__file__), "arquivos", "paises.json")
-PACOTES_JSON_PATH = os.path.join(os.path.dirname(__file__), "arquivos", "pacotes.json")
-CLIENTES_JSON_PATH = os.path.join(os.path.dirname(__file__), "arquivos", "clientes.json")
-REDE_JSON_PATH = os.path.join(os.path.dirname(__file__), "arquivos", "rede.json")
 
-# Instância da Tabela Hash em memória (Etapa 1)
+# Instância da Tabela Hash em memória
 tabela_paises = TabelaHash(capacidade_inicial=17)
 
 
 def carregar_dados():
     """
-    Carrega os dados persistidos nos arquivos JSON diretamente para as estruturas em memória.
+    Carrega os dados de arquivos/paises.json para a Tabela Hash em memória.
     Executado na inicialização da aplicação.
     """
-    # TODO: Ler arquivos/paises.json e inserir cada registro na Tabela Hash (tabela_paises.inserir)
+    # TODO: Ler arquivos/paises.json e inserir cada registro na Tabela Hash
     pass
 
 
 def persistir_dados():
     """
-    Extrai os dados da Tabela Hash em memória e salva no arquivo JSON correspondente.
-    Executado após operações de inserção, alteração ou exclusão.
+    Persiste o estado atual da Tabela Hash de volta no arquivo arquivos/paises.json.
+    Executado após operações de cadastro, alteração ou remoção.
     """
-    # TODO: Obter registros da Tabela Hash (tabela_paises.listar_todos) e salvar em arquivos/paises.json
+    # TODO: Extrair registros da Tabela Hash e salvar em arquivos/paises.json
     pass
 
 
-# Carga inicial na inicialização
+# Carga inicial dos dados
 carregar_dados()
 
 
 # ==============================================================================
-# ROTAS - PÁGINA INICIAL E CONSULTA DE COBERTURA
+# ROTAS DA ETAPA 1
 # ==============================================================================
 
 @app.route("/")
 def index():
-    """Página inicial com dashboard de apresentação do sistema GlobalSIM."""
+    """Página inicial do GlobalSIM."""
     return render_template("index.html")
 
 
 @app.route("/cobertura", methods=["GET", "POST"])
 def cobertura():
     """
-    Consulta de cobertura por código internacional do país (ex: "IT", "BR").
-    A busca deve ser realizada diretamente na Tabela Hash em tempo O(1).
+    Consulta de cobertura por código de país (ex: "BR", "IT").
+    A verificação deve ser feita diretamente na Tabela Hash em tempo O(1).
     """
     resultado = None
     codigo_buscado = ""
@@ -83,19 +73,20 @@ def cobertura():
     if request.method == "POST":
         consultado = True
         codigo_buscado = request.form.get("codigo", "").strip().upper()
-        # TODO: Realizar a busca na Tabela Hash: resultado = tabela_paises.buscar(codigo_buscado)
+        # TODO: Buscar na Tabela Hash: resultado = tabela_paises.buscar(codigo_buscado)
 
-    return render_template("cobertura.html", resultado=resultado, codigo=codigo_buscado, consultado=consultado)
+    return render_template(
+        "cobertura.html",
+        resultado=resultado,
+        codigo=codigo_buscado,
+        consultado=consultado
+    )
 
-
-# ==============================================================================
-# ROTAS - GERENCIAMENTO DE PAÍSES (ETAPA 1)
-# ==============================================================================
 
 @app.route("/paises")
 def paises():
     """Listagem de todos os países atendidos cadastrados na Tabela Hash."""
-    # TODO: Obter lista completa de países da Tabela Hash
+    # TODO: Obter lista de países da Tabela Hash: lista_paises = tabela_paises.listar_todos()
     lista_paises = []
     return render_template("paises.html", paises=lista_paises)
 
@@ -103,10 +94,10 @@ def paises():
 @app.route("/paises/cadastrar", methods=["POST"])
 def cadastrar_pais():
     """
-    Cadastra um novo país atendido na Tabela Hash e persiste no JSON.
-    Segue o padrão Post/Redirect/Get.
+    Cadastra um novo país na Tabela Hash e persiste no JSON.
+    Padrão Post/Redirect/Get.
     """
-    # TODO: Coletar dados do formulário (codigo, nome, regiao, operadora, tecnologia)
+    # TODO: Obter dados do formulário (codigo, pais, regiao, operadora, tecnologia)
     # TODO: Inserir na Tabela Hash e chamar persistir_dados()
     flash("País cadastrado com sucesso!", "success")
     return redirect(url_for("paises"))
@@ -118,7 +109,7 @@ def editar_pais(codigo):
     Atualiza os dados de um país existente na Tabela Hash e persiste no JSON.
     """
     # TODO: Atualizar registro na Tabela Hash e chamar persistir_dados()
-    flash(f"País {codigo} atualizado com sucesso!", "success")
+    flash(f"Dados do país {codigo} atualizados com sucesso!", "success")
     return redirect(url_for("paises"))
 
 
@@ -135,26 +126,12 @@ def excluir_pais(codigo):
 @app.route("/instrumentacao")
 def instrumentacao():
     """
-    Painel de instrumentação para inspeção das estruturas de dados.
-    Permite observar o estado interno da Tabela Hash (buckets, colisões, fator de carga).
+    Exibe as métricas de instrumentação interna da Tabela Hash
+    (fator de carga, colisões, capacidade e distribuição dos buckets).
     """
     # TODO: Obter métricas da estrutura: metricas = tabela_paises.obter_metricas()
     metricas = {}
     return render_template("instrumentacao.html", metricas=metricas)
-
-
-# ==============================================================================
-# ROTAS - DIFERENCIAL (RECOMENDAÇÃO DE PACOTES POR ROTEIRO)
-# ==============================================================================
-
-@app.route("/recomendador", methods=["GET", "POST"])
-def recomendador():
-    """
-    Interface para montagem de roteiro de viagem e recomendação de pacote.
-    Integra a Tabela Hash, Grafo e regras de pacotes de dados.
-    """
-    # TODO: Implementar fluxo de recomendação com base no roteiro selecionado
-    return render_template("recomendador.html")
 
 
 if __name__ == "__main__":
