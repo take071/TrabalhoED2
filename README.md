@@ -1,14 +1,16 @@
-# GlobalSIM - Serviço Internacional de Internet por eSIM
+<h1 align="center">GlobalSIM - Serviço Internacional de Internet por eSIM</h1>
 
 <p align="center">
   <img src="static/img/logo.png" alt="GlobalSIM Logo" width="480">
 </p>
 
-Universidade do Estado da Bahia (UNEB)  
-Departamento de Ciências Exatas e da Terra - Campus I  
-Colegiado de Sistemas de Informação  
-Disciplina: Estruturas de Dados II  
-Docente: Profa. Maria Inés Restovic  
+<p align="center">
+  <strong>Universidade do Estado da Bahia (UNEB)</strong><br>
+  Departamento de Ciências Exatas e da Terra - Campus I<br>
+  Colegiado de Sistemas de Informação<br>
+  Disciplina: Estruturas de Dados II<br>
+  Docente: Profa. Maria Inés Restovic
+</p>  
 
 ### Equipe
 - Arthur Felipe
