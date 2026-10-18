@@ -31,31 +31,26 @@
 
 ```mermaid
 flowchart LR
-    subgraph Frontend["Camada de Apresentação (Jinja2 + Bootstrap 5)"]
-        UI_Home["/ (Home)"]
-        UI_Cob["/cobertura"]
-        UI_Paises["/paises"]
-        UI_Inst["/instrumentacao"]
+    subgraph Frontend["Camada de Apresentação"]
+        UI["Templates Jinja2 e Bootstrap 5<br>(Home, Cobertura, Países, Instrumentação)"]
     end
 
-    subgraph Backend["Controlador Web (app.py)"]
-        Rotas["Rotas Web (GET/POST)"]
-        PRG["Padrão Post/Redirect/Get"]
-        Persist["Persistência JSON"]
+    subgraph Backend["Controlador Web"]
+        App["app.py<br>(Rotas Web e Post/Redirect/Get)"]
     end
 
-    subgraph Core["Núcleo da Estrutura de Dados (ED2)"]
-        TH["TabelaHash (M=17)"]
-        No["NoHash (Cadeia de Sinônimos)"]
+    subgraph Core["Estrutura de Dados (ED2)"]
+        TH["TabelaHash com NoHash<br>(Encadeamento Separado)"]
     end
 
-    subgraph Storage["Armazenamento em Disco"]
+    subgraph Storage["Armazenamento"]
         JSON[("arquivos/paises.json")]
     end
 
-    Frontend <-->|Requisições HTTP & Formulários| Backend
-    Backend <-->|Acesso O(1) médio| Core
-    Backend <-->|Carga na inicialização & Dump| Storage
+    UI -->|"Requisições HTTP"| App
+    App -->|"Renderização HTML"| UI
+    App -->|"Busca O(1) e Mutações"| TH
+    App -->|"Carga e Persistência"| JSON
 ```
 
 > [!IMPORTANT]
@@ -158,18 +153,32 @@ Para considerar a **Etapa 1** formalmente concluída:
 
 ## 💻 Como Rodar o Projeto
 
-### Opção 1: Via Nix / NixOS (Ambiente Oficial da Equipe)
-```bash
-nix-shell
-python3 app.py
-```
+### 1. Criar e Ativar o Ambiente Virtual (venv)
 
-### Opção 2: Via Ambiente Virtual Python Padrão
+**No Linux / macOS:**
 ```bash
 python3 -m venv venv
 source venv/bin/activate
+```
+
+**No Windows (PowerShell):**
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+
+*(No Prompt de Comando / CMD clássico: `venv\Scripts\activate.bat`)*
+
+### 2. Instalar as Dependências
+```bash
 pip install -r requirements.txt
-python3 app.py
+```
+
+### 3. Iniciar o Servidor
+```bash
+python3 app.py   # ou python app.py no Windows
 ```
 
 Acesse no navegador: **`http://localhost:5000`**
+
+> 💡 **Nota sobre Nix / NixOS:** Para quem desenvolve em ambiente NixOS, o projeto também mantém o arquivo `shell.nix` configurado. Basta rodar `nix-shell` e em seguida `python3 app.py`.

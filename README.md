@@ -58,7 +58,7 @@ O projeto é construído de forma incremental. Nesta primeira etapa, a estrutura
 ```text
 Trabalho-ED2/
 ├── app.py                     # Aplicação Flask e rotas da Etapa 1
-├── shell.nix                  # Configuração de ambiente para Nix/NixOS
+├── shell.nix                  # (Opcional) Configuração de ambiente para Nix/NixOS
 ├── requirements.txt           # Dependências do projeto (Flask)
 ├── README.md                  # Documentação e relatório do projeto
 │
@@ -89,25 +89,40 @@ Trabalho-ED2/
 
 ### Pré-requisitos
 - Python 3.10 ou superior
-- Pip ou ambiente Nix
+- Gerenciador de pacotes `pip`
 
-### Executando com ambiente virtual Python (padrão)
+### 1. Clonar o repositório
 ```bash
-# Criar e ativar o ambiente virtual
+git clone https://github.com/take071/TrabalhoED2.git
+cd TrabalhoED2
+```
+
+### 2. Criar e ativar o ambiente virtual (venv)
+
+**No Linux / macOS:**
+```bash
 python3 -m venv venv
 source venv/bin/activate
-
-# Instalar as dependências
-pip install -r requirements.txt
-
-# Executar a aplicação
-python3 app.py
 ```
 
-### Executando via Nix / NixOS
+**No Windows (PowerShell):**
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+
+*(No Prompt de Comando / CMD tradicional: `venv\Scripts\activate.bat`)*
+
+### 3. Instalar as dependências
 ```bash
-nix-shell
-python3 app.py
+pip install -r requirements.txt
 ```
 
-Após iniciar o servidor, a aplicação estará acessível em: `http://localhost:5000`
+### 4. Executar a aplicação
+```bash
+python3 app.py   # ou python app.py no Windows
+```
+
+A aplicação ficará disponível em: **`http://localhost:5000`**
+
+> 💡 **Nota (Nix / NixOS):** Para desenvolvedores que utilizam NixOS, o repositório também inclui suporte opcional via `nix-shell`. Basta rodar `nix-shell` e em seguida `python3 app.py`.
