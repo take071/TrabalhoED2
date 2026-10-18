@@ -22,8 +22,8 @@
 | :--- | :--- | :---: | :---: |
 | **Estrutura de Dados** | [`estruturas/tabela_hash.py`](estruturas/tabela_hash.py) | ✅ Concluído | **100%** |
 | **Controlador & Persistência** | [`app.py`](app.py) + [`arquivos/paises.json`](arquivos/paises.json) | ⏳ A implementar | **25%** |
-| **Interface do Usuário** | [`templates/`](templates/) (Bootstrap 5 + Jinja2) | ⏳ A implementar | **0%** |
-| **Estilização & Identidade Visual** | [`static/`](static/) | ⏳ A implementar | **0%** |
+| **Interface do Usuário** | [`templates/`](templates/) (Bootstrap 5 + Jinja2) | ⏳ A implementar | **100%** |
+| **Estilização & Identidade Visual** | [`static/`](static/) | ⏳ A implementar | **100%** |
 
 ---
 
@@ -87,55 +87,55 @@ flowchart LR
 ---
 
 ### 2. `app.py` (Controlador Flask e Persistência)
-- [ ] **`carregar_dados()`**
-  - [ ] Leitura do arquivo `arquivos/paises.json` na subida do servidor.
-  - [ ] Inserção de cada registro na instância em memória: `tabela_paises.inserir(item["codigo"], item)`.
-- [ ] **`persistir_dados()`**
-  - [ ] Extração de todos os países via `tabela_paises.listar_todos()`.
-  - [ ] Gravação no arquivo `arquivos/paises.json` com indentação limpa (`indent=2, ensure_ascii=False`).
-- [ ] **Rota `/cobertura` (`methods=["GET", "POST"]`)**
-  - [ ] Captura e normalização do código do formulário (`request.form.get("codigo")`).
-  - [ ] Busca direta na Tabela Hash em $O(1)$ médio e exibição do card de resultado.
-- [ ] **Rota `/paises` (`methods=["GET"]`)**
-  - [ ] Consulta completa via `tabela_paises.listar_todos()` e renderização da tabela gerencial.
-- [ ] **Rota `/paises/cadastrar` (`methods=["POST"]`)**
-  - [ ] Validação dos campos obrigatórios (`codigo`, `pais`, `regiao`, `operadora`, `tecnologia`).
-  - [ ] Inserção na Tabela Hash e sincronização em disco via `persistir_dados()`.
-  - [ ] Mensagem de feedback via `flash(...)` e redirecionamento no padrão *Post/Redirect/Get*.
-- [ ] **Rota `/paises/<codigo>/editar` (`methods=["POST"]`)**
-  - [ ] Captura dos novos dados e atualização na estrutura via `tabela_paises.inserir(codigo, novos_dados)`.
-  - [ ] Sincronização em disco via `persistir_dados()` e feedback ao usuário.
-- [ ] **Rota `/paises/<codigo>/excluir` (`methods=["POST"]`)**
-  - [ ] Remoção na Tabela Hash com `tabela_paises.remover(codigo)` e atualização do JSON.
-- [ ] **Rota `/instrumentacao` (`methods=["GET"]`)**
-  - [ ] Extração das métricas da estrutura via `tabela_paises.obter_metricas()` e envio para `instrumentacao.html`.
+- [x] **`carregar_dados()`**
+  - [x] Leitura do arquivo `arquivos/paises.json` na subida do servidor.
+  - [x] Inserção de cada registro na instância em memória: `tabela_paises.inserir(item["codigo"], item)`.
+- [x] **`persistir_dados()`**
+  - [x] Extração de todos os países via `tabela_paises.listar_todos()`.
+  - [x] Gravação no arquivo `arquivos/paises.json` com indentação limpa (`indent=2, ensure_ascii=False`).
+- [x] **Rota `/cobertura` (`methods=["GET", "POST"]`)**
+  - [x] Captura e normalização do código do formulário (`request.form.get("codigo")`).
+  - [x] Busca direta na Tabela Hash em $O(1)$ médio e exibição do card de resultado.
+- [x] **Rota `/paises` (`methods=["GET"]`)**
+  - [x] Consulta completa via `tabela_paises.listar_todos()` e renderização da tabela gerencial.
+- [x] **Rota `/paises/cadastrar` (`methods=["POST"]`)**
+  - [x] Validação dos campos obrigatórios (`codigo`, `pais`, `regiao`, `operadora`, `tecnologia`).
+  - [x] Inserção na Tabela Hash e sincronização em disco via `persistir_dados()`.
+  - [x] Mensagem de feedback via `flash(...)` e redirecionamento no padrão *Post/Redirect/Get*.
+- [x] **Rota `/paises/<codigo>/editar` (`methods=["POST"]`)**
+  - [x] Captura dos novos dados e atualização na estrutura via `tabela_paises.inserir(codigo, novos_dados)`.
+  - [x] Sincronização em disco via `persistir_dados()` e feedback ao usuário.
+- [x] **Rota `/paises/<codigo>/excluir` (`methods=["POST"]`)**
+  - [x] Remoção na Tabela Hash com `tabela_paises.remover(codigo)` e atualização do JSON.
+- [x] **Rota `/instrumentacao` (`methods=["GET"]`)**
+  - [x] Extração das métricas da estrutura via `tabela_paises.obter_metricas()` e envio para `instrumentacao.html`.
 
 ---
 
 ### 3. Camada de Apresentação (`templates/`)
-- [ ] **`templates/base.html` (Layout Base)**
-  - [ ] HTML5, viewport responsivo e inclusão do Bootstrap 5 via CDN.
-  - [ ] Navbar institucional com logotipo e links: *Início*, *Consulta de Cobertura*, *Países Atendidos* e *Instrumentação*.
-  - [ ] Bloco dinâmico de alertas do Flask (`get_flashed_messages()`) e rodapé acadêmico.
-- [ ] **`templates/index.html` (Página Inicial)**
-  - [ ] Hero section de apresentação dos serviços da GlobalSIM.
-  - [ ] Cards de acesso rápido para as principais funcionalidades do sistema.
-- [ ] **`templates/cobertura.html` (Consulta Rápida)**
-  - [ ] Formulário de consulta por código de país (ex: `IT`, `BR`, `US`).
-  - [ ] Card de retorno visual: **Cobertura Disponível** (país, região, operadora e 5G) ou aviso de país não atendido.
-- [ ] **`templates/paises.html` (CRUD Gerencial)**
-  - [ ] Tabela com listagem completa, badges de tecnologia (5G/4G) e ações de edição/exclusão.
-  - [ ] Modal/Formulário para cadastro de novos países e confirmação de exclusão em JavaScript.
-- [ ] **`templates/instrumentacao.html` (Painel Didático de Estruturas)**
-  - [ ] Cards de métricas principais: Capacidade ($M$), Elementos ($N$), Fator de Carga ($\alpha$) e Total de Colisões.
-  - [ ] Visualizador interativo de buckets exibindo status (vazio/ocupado) e chaves encadeadas em cada posição.
+- [x] **`templates/base.html` (Layout Base)**
+  - [x] HTML5, viewport responsivo e inclusão do Bootstrap 5 via CDN.
+  - [x] Navbar institucional com logotipo e links: *Início*, *Consulta de Cobertura*, *Países Atendidos* e *Instrumentação*.
+  - [x] Bloco dinâmico de alertas do Flask (`get_flashed_messages()`) e rodapé acadêmico.
+- [x] **`templates/index.html` (Página Inicial)**
+  - [x] Hero section de apresentação dos serviços da GlobalSIM.
+  - [x] Cards de acesso rápido para as principais funcionalidades do sistema.
+- [x] **`templates/cobertura.html` (Consulta Rápida)**
+  - [x] Formulário de consulta por código de país (ex: `IT`, `BR`, `US`).
+  - [x] Card de retorno visual: **Cobertura Disponível** (país, região, operadora e 5G) ou aviso de país não atendido.
+- [x] **`templates/paises.html` (CRUD Gerencial)**
+  - [x] Tabela com listagem completa, badges de tecnologia (5G/4G) e ações de edição/exclusão.
+  - [x] Modal/Formulário para cadastro de novos países e confirmação de exclusão em JavaScript.
+- [x] **`templates/instrumentacao.html` (Painel Didático de Estruturas)**
+  - [x] Cards de métricas principais: Capacidade ($M$), Elementos ($N$), Fator de Carga ($\alpha$) e Total de Colisões.
+  - [x] Visualizador interativo de buckets exibindo status (vazio/ocupado) e chaves encadeadas em cada posição.
 
 ---
 
 ### 4. Estilos e Identidade Visual (`static/`)
-- [ ] **`static/css/style.css`**
-  - [ ] Paleta de cores corporativa alinhada à telecomunicação e logotipo da GlobalSIM.
-  - [ ] Estilização dos cartões de métricas e grade de buckets da Tabela Hash.
+- [x] **`static/css/style.css`**
+  - [x] Paleta de cores corporativa alinhada à telecomunicação e logotipo da GlobalSIM.
+  - [x] Estilização dos cartões de métricas e grade de buckets da Tabela Hash.
 
 ---
 
