@@ -1,5 +1,9 @@
 # GlobalSIM - Serviço Internacional de Internet por eSIM
 
+<p align="center">
+  <img src="static/img/logo.png" alt="GlobalSIM Logo" width="480">
+</p>
+
 Universidade do Estado da Bahia (UNEB)  
 Departamento de Ciências Exatas e da Terra - Campus I  
 Colegiado de Sistemas de Informação  
@@ -68,7 +72,7 @@ Trabalho-ED2/
     ├── css/
     │   └── .gitkeep
     ├── img/
-    │   └── .gitkeep
+    │   └── logo.png           # Logotipo da GlobalSIM
     └── js/
         └── .gitkeep
 ```
