@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Instrumentação da Estrutura - GlobalSIM{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <h3 class="fw-bold mb-0">Instrumentação e Métricas</h3>
+  <small class="text-muted">Observação analítica em tempo real do estado interno da Tabela Hash.</small>
+</div>
+
+<!-- Métricas Principais -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 bg-white p-3">
+      <small class="text-muted text-uppercase fw-semibold">Total de Elementos</small>
+      <h2 class="fw-bold text-primary mb-0">{{ metricas.total_elementos }}</h2>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 bg-white p-3">
+      <small class="text-muted text-uppercase fw-semibold">Capacidade (Buckets)</small>
+      <h2 class="fw-bold text-dark mb-0">{{ metricas.capacidade }}</h2>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 bg-white p-3">
+      <small class="text-muted text-uppercase fw-semibold">Fator de Carga (&alpha;)</small>
+      <h2 class="fw-bold text-info mb-0">{{ metricas.fator_carga }}</h2>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 bg-white p-3">
+      <small class="text-muted text-uppercase fw-semibold">Total de Colisões</small>
+      <h2 class="fw-bold text-danger mb-0">{{ metricas.total_colisoes }}</h2>
+    </div>
+  </div>
+</div>
+
+<!-- Distribuição dos Buckets -->
+<div class="card shadow-sm border-0">
+  <div class="card-header bg-white py-3">
+    <h5 class="mb-0 fw-bold">Distribuição de Chaves por Bucket</h5>
+    <small class="text-muted">Visualização do espalhamento da função hash polinomial nos buckets da tabela.</small>
+  </div>
+  <div class="card-body">
+    <div class="row g-2">
+      {% for b in metricas.distribuicao %}
+      <div class="col-md-2 col-sm-4 col-6">
+        <div class="p-2 border rounded text-center {% if b.quantidade > 1 %}border-warning bg-light{% elif b.quantidade == 1 %}border-success bg-light{% else %}border-light bg-light-subtle{% endif %}">
+          <small class="text-muted d-block">Bucket [{{ b.indice }}]</small>
+          <span class="badge {% if b.quantidade > 1 %}bg-warning text-dark{% elif b.quantidade == 1 %}bg-success{% else %}bg-secondary{% endif %}">
+            {{ b.quantidade }} item(ns)
+          </span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

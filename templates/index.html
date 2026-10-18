@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}GlobalSIM - Visão Geral{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+  <div class="col-md-8">
+    <h2 class="fw-bold">GlobalSIM — Painel de Controle</h2>
+    <p class="text-muted">Serviço Internacional de Internet por eSIM desenvolvido para a disciplina de Estruturas de Dados II (UNEB).</p>
+  </div>
+  <div class="col-md-4 text-md-end">
+    <a href="{{ url_for('consulta_cobertura') }}" class="btn btn-primary me-2">
+      <i class="bi bi-search"></i> Consultar Cobertura
+    </a>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <!-- Card Etapa 1 -->
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm border-0 border-top border-4 border-primary">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="badge bg-primary">Etapa 1</span>
+          <span class="text-success small fw-semibold"><i class="bi bi-check-circle-fill"></i> Ativa</span>
+        </div>
+        <h5 class="card-title fw-bold">Tabela Hash</h5>
+        <p class="card-text text-muted small">
+          Gerenciamento e indexação de países atendidos pela GlobalSIM com tratamento de colisões e instrumentação.
+        </p>
+      </div>
+      <div class="card-footer bg-white border-0 pt-0">
+        <a href="{{ url_for('listar_paises') }}" class="btn btn-outline-primary btn-sm w-100">Ver Países</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card Etapa 2 -->
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm border-0 border-top border-4 border-warning">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="badge bg-warning text-dark">Etapa 2</span>
+          <span class="text-muted small">Prevista: 24/11</span>
+        </div>
+        <h5 class="card-title fw-bold">Árvore B</h5>
+        <p class="card-text text-muted small">
+          Administração de grande volume de clientes e eSIMs (~1.000 registros) com busca e inserção balanceadas.
+        </p>
+      </div>
+      <div class="card-footer bg-white border-0 pt-0">
+        <button class="btn btn-outline-secondary btn-sm w-100" disabled>Em desenvolvimento</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card Etapa 3 -->
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm border-0 border-top border-4 border-info">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="badge bg-info text-dark">Etapa 3</span>
+          <span class="text-muted small">Prevista: 01/12</span>
+        </div>
+        <h5 class="card-title fw-bold">Grafos e Rotas</h5>
+        <p class="card-text text-muted small">
+          Rede internacional modelada com grafos ponderados, cálculo de rotas com BFS, DFS e Dijkstra por menor latência.
+        </p>
+      </div>
+      <div class="card-footer bg-white border-0 pt-0">
+        <button class="btn btn-outline-secondary btn-sm w-100" disabled>Em desenvolvimento</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Card do Diferencial da Equipe -->
+<div class="card shadow-sm border-0 mb-4 bg-light">
+  <div class="card-body p-4">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <span class="badge bg-dark mb-2">Diferencial da Equipe</span>
+        <h4 class="fw-bold mb-2">Recomendação de Pacote por Roteiro de Viagem</h4>
+        <p class="text-muted mb-0">
+          Analisa destinos selecionados através da Tabela Hash, estima a conectividade e sugere o pacote de dados com o melhor custo-benefício para a viagem.
+        </p>
+      </div>
+      <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+        <a href="{{ url_for('tela_recomendador') }}" class="btn btn-dark">
+          <i class="bi bi-compass"></i> Testar Recomendador
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
