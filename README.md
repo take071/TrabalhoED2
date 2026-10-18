@@ -31,6 +31,8 @@ O principal objetivo do trabalho é aplicar, analisar e integrar as estruturas d
 
 A persistência dos dados é realizada em arquivos JSON, carregados nas estruturas em memória durante a inicialização da aplicação, mantendo a lógica das estruturas de dados estritamente separada das rotas e controladores do Flask.
 
+> 📋 **Acompanhamento da Etapa 1:** Consulte o [Roadmap & Checklist da Etapa 1](ETAPA_1_TODOS.md) para acompanhar o progresso detalhado, arquitetura e critérios de aceite das entregas.
+
 ---
 
 ## 2. Diferencial da Equipe

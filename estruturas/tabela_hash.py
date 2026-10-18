@@ -1,27 +1,12 @@
 """
-Módulo: Tabela Hash (Etapa 1)
-Disciplina: Estruturas de Dados II - UNEB
-Equipe: Arthur Felipe, Lucas Vinicius, Raphael Lopes
-
 Objetivo:
 Implementar uma Tabela Hash própria para gerenciar os países atendidos pela GlobalSIM.
 A chave de busca e dispersão é o código internacional do país (ex: "BR", "IT", "US").
-
-Requisitos e Orientações:
-1. Escolher uma função de hash adequada para strings curtas (ex: método da multiplicação, 
-   polinomial ou soma ponderada com módulo pelo tamanho da tabela).
-2. Definir a política de tratamento de colisões (recomendado: Encadeamento Separado 
-   com lista encadeada ou Sondagem Aberta).
-3. Implementar métodos de inserção, busca, remoção e listagem completa.
-4. Incluir instrumentação para monitorar:
-   - Fator de carga (alpha = N / M)
-   - Contagem de colisões
-   - Distribuição de elementos nos buckets
 """
 
 
 class NoHash:
-    """Nó para encadeamento de colisões na Tabela Hash."""
+    """Nó para encadeamento separado na Tabela Hash."""
     def __init__(self, chave: str, valor: dict):
         self.chave = chave
         self.valor = valor
@@ -30,69 +15,138 @@ class NoHash:
 
 class TabelaHash:
     """
-    Estrutura de Tabela Hash para armazenamento e busca de países.
+    Estrutura de Tabela Hash com encadeamento separado e instrumentação
+    para gerenciamento dos países atendidos pela GlobalSIM.
     """
     def __init__(self, capacidade_inicial: int = 17):
-        # Capacidade inicial da tabela (geralmente um número primo)
         self.capacidade = capacidade_inicial
-        self.tamanho = 0
-        self.buckets = [None] * self.capacidade
+        self.tamanho = 0  # N: total de elementos armazenados
+        self.buckets = [None] * self.capacidade  # M buckets
         self.total_colisoes = 0
 
     def _hash(self, chave: str) -> int:
         """
-        Função de dispersão (hash).
-        Calcula o índice correspondente para a chave fornecida.
+        Função de dispersão polinomial (base 31) para strings curtas.
+        Garante padronização em maiúsculas e resultado no intervalo [0, capacidade - 1].
         """
-        # TODO: Implementar o cálculo do índice hash para a string
-        pass
+        chave_normalizada = str(chave).strip().upper()
+        h = 0
+        for caractere in chave_normalizada:
+            h = (h * 31 + ord(caractere)) % self.capacidade
+        return h
 
     def inserir(self, chave: str, valor: dict):
         """
         Insere ou atualiza um registro associado à chave.
-        Tratar colisões caso o bucket já possua outro registro.
+        Trata colisões via encadeamento separado usando NoHash.
         """
-        # TODO: Implementar inserção com tratamento de colisões
-        pass
+        chave_normalizada = str(chave).strip().upper()
+        indice = self._hash(chave_normalizada)
+        atual = self.buckets[indice]
 
-    def buscar(self, chave: str):
+        # Caso 1: Bucket vazio
+        if atual is None:
+            self.buckets[indice] = NoHash(chave_normalizada, valor)
+            self.tamanho += 1
+            return
+
+        # Caso 2: Bucket ocupado — verificar se a chave já existe (update)
+        anterior = None
+        while atual is not None:
+            if atual.chave == chave_normalizada:
+                atual.valor = valor  # Atualização (não conta colisão nem tamanho)
+                return
+            anterior = atual
+            atual = atual.proximo
+
+        # Caso 3: Colisão real detectada (nova chave no mesmo bucket)
+        anterior.proximo = NoHash(chave_normalizada, valor)
+        self.tamanho += 1
+        self.total_colisoes += 1
+
+    def buscar(self, chave: str) -> dict | None:
         """
         Recupera o registro associado à chave em tempo O(1) médio.
         Retorna o dicionário de dados ou None se não encontrado.
         """
-        # TODO: Implementar busca na tabela
-        pass
+        chave_normalizada = str(chave).strip().upper()
+        indice = self._hash(chave_normalizada)
+        atual = self.buckets[indice]
+
+        while atual is not None:
+            if atual.chave == chave_normalizada:
+                return atual.valor
+            atual = atual.proximo
+
+        return None
 
     def remover(self, chave: str) -> bool:
         """
-        Remove o registro associado à chave.
+        Remove o registro associado à chave mantendo os ponteiros da lista.
         Retorna True se removido com sucesso, False caso contrário.
         """
-        # TODO: Implementar remoção mantendo a integridade da estrutura
-        pass
+        chave_normalizada = str(chave).strip().upper()
+        indice = self._hash(chave_normalizada)
+        atual = self.buckets[indice]
+        anterior = None
+
+        while atual is not None:
+            if atual.chave == chave_normalizada:
+                if anterior is None:
+                    # Remove o primeiro nó do bucket
+                    self.buckets[indice] = atual.proximo
+                else:
+                    # Remove nó intermediário ou final
+                    anterior.proximo = atual.proximo
+                self.tamanho -= 1
+                return True
+
+            anterior = atual
+            atual = atual.proximo
+
+        return False
 
     def listar_todos(self) -> list:
         """
         Retorna uma lista com todos os registros armazenados na estrutura.
-        Utilizado para persistência e visualização.
+        Utilizado na rota /paises e na persistência em disco (paises.json).
         """
-        # TODO: Percorrer os buckets e retornar todos os elementos válidos
-        return []
+        todos = []
+        for i in range(self.capacidade):
+            atual = self.buckets[i]
+            while atual is not None:
+                todos.append(atual.valor)
+                atual = atual.proximo
+        return todos
 
     def obter_metricas(self) -> dict:
         """
-        Gera métricas de instrumentação para análise acadêmica da estrutura:
-        - capacidade atual
-        - quantidade de elementos
-        - fator de carga
-        - total de colisões
-        - contagem de itens por bucket
+        Gera métricas de instrumentação para a rota /instrumentacao:
+        - Capacidade (M)
+        - Tamanho (N)
+        - Fator de carga (alpha = N / M)
+        - Total de colisões acumuladas
+        - Distribuição detalhada dos buckets (para visualização no HTML)
         """
-        # TODO: Calcular e retornar métricas de análise da tabela
+        distribuicao = []
+        for i in range(self.capacidade):
+            atual = self.buckets[i]
+            chaves = []
+            while atual is not None:
+                chaves.append(atual.chave)
+                atual = atual.proximo
+            distribuicao.append({
+                "indice": i,
+                "total": len(chaves),
+                "chaves": chaves
+            })
+
+        fator_carga = round(self.tamanho / self.capacidade, 2) if self.capacidade > 0 else 0.0
+
         return {
             "capacidade": self.capacidade,
             "tamanho": self.tamanho,
-            "fator_carga": 0.0,
+            "fator_carga": fator_carga,
             "total_colisoes": self.total_colisoes,
-            "distribuicao_buckets": []
+            "distribuicao_buckets": distribuicao
         }
