@@ -1,59 +1,66 @@
 """
-Módulo de Grafos - Etapa 3
-Representação da rede internacional de conexões da GlobalSIM.
-Inclui algoritmos de busca (BFS, DFS) e caminho mínimo com menor latência (Dijkstra).
+Módulo: Grafo da Rede Internacional (Etapa 3)
+Disciplina: Estruturas de Dados II - UNEB
+Equipe: Arthur Felipe, Lucas Vinicius, Raphael Lopes
+
+Objetivo:
+Representar a rede internacional de conexões da GlobalSIM através de um Grafo Ponderado,
+onde:
+- Vértices: países atendidos (identificados por código, ex: "BR", "US", "PT").
+- Arestas: conexões de rede entre países.
+- Pesos: latência da conexão em milissegundos (ms).
+
+Requisitos e Orientações:
+1. Representação do grafo (lista de adjacência recomendada).
+2. Algoritmo Breadth-First Search (BFS - Busca em Largura).
+3. Algoritmo Depth-First Search (DFS - Busca em Profundidade).
+4. Algoritmo de Dijkstra para cálculo da rota de menor latência total.
 """
 
-import heapq
 
 class GrafoRede:
-    """Grafo ponderado para roteamento entre países."""
+    """
+    Grafo ponderado para modelagem de rede internacional de telecomunicações.
+    """
     def __init__(self):
-        self.adjacencias = {}  # vertice -> [(vizinho, latencia_ms)]
+        # Mapeamento: vertice -> [(vizinho, latencia_ms), ...]
+        self.adjacencias = {}
 
     def adicionar_vertice(self, vertice: str):
-        if vertice not in self.adjacencias:
-            self.adjacencias[vertice] = []
+        """Adiciona um novo país à rede."""
+        # TODO: Adicionar vértice na estrutura de adjacência
+        pass
 
     def adicionar_aresta(self, origem: str, destino: str, latencia_ms: int):
-        self.adicionar_vertice(origem)
-        self.adicionar_vertice(destino)
-        self.adjacencias[origem].append((destino, latencia_ms))
-        self.adjacencias[destino].append((origem, latencia_ms))
+        """
+        Adiciona uma conexão bidirecional entre dois países com seu peso de latência.
+        """
+        # TODO: Adicionar aresta bidirecional com peso
+        pass
 
-    def dijkstra(self, origem: str, destino: str):
-        """Calcula a rota de menor latência entre origem e destino."""
-        if origem not in self.adjacencias or destino not in self.adjacencias:
-            return None, float('inf')
+    def bfs(self, origem: str) -> list:
+        """
+        Busca em Largura (BFS).
+        Retorna a ordem de visitação dos vértices a partir da origem.
+        """
+        # TODO: Implementar BFS utilizando fila (FIFO)
+        return []
 
-        distancias = {v: float('inf') for v in self.adjacencias}
-        anteriores = {v: None for v in self.adjacencias}
-        distancias[origem] = 0
+    def dfs(self, origem: str) -> list:
+        """
+        Busca em Profundidade (DFS).
+        Retorna a ordem de visitação dos vértices a partir da origem.
+        """
+        # TODO: Implementar DFS utilizando pilha ou recursão
+        return []
 
-        fila = [(0, origem)]
-
-        while fila:
-            dist_atual, u = heapq.heappop(fila)
-            if dist_atual > distancias[u]:
-                continue
-            if u == destino:
-                break
-
-            for vizinho, peso in self.adjacencias[u]:
-                nova_dist = dist_atual + peso
-                if nova_dist < distancias[vizinho]:
-                    distancias[vizinho] = nova_dist
-                    anteriores[vizinho] = u
-                    heapq.heappush(fila, (nova_dist, vizinho))
-
-        if distancias[destino] == float('inf'):
-            return None, float('inf')
-
-        caminho = []
-        passo = destino
-        while passo is not None:
-            caminho.append(passo)
-            passo = anteriores[passo]
-        caminho.reverse()
-
-        return caminho, distancias[destino]
+    def dijkstra(self, origem: str, destino: str) -> tuple:
+        """
+        Algoritmo de Dijkstra para menor caminho ponderado.
+        Retorna:
+          (caminho_como_lista, latencia_total_em_ms)
+        Exemplo:
+          (["BR", "PT", "FR", "IT"], 185)
+        """
+        # TODO: Implementar Dijkstra com fila de prioridades (heapq)
+        return ([], 0)

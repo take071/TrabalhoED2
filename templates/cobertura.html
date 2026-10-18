@@ -11,11 +11,11 @@
         <small class="text-muted">Busca direta em tempo O(1) na Tabela Hash por código de país.</small>
       </div>
       <div class="card-body p-4">
-        <form method="POST" action="{{ url_for('consulta_cobertura') }}">
+        <form method="POST" action="{{ url_for('cobertura') }}">
           <div class="mb-3">
             <label for="codigo" class="form-label fw-semibold">Código do País (duas letras):</label>
             <div class="input-group">
-              <input type="text" class="form-control text-uppercase" id="codigo" name="codigo" placeholder="Ex: IT, BR, US, PT" value="{{ codigo_consultado or '' }}" maxlength="2" required autofocus>
+              <input type="text" class="form-control text-uppercase" id="codigo" name="codigo" placeholder="Ex: IT, BR, US, PT" value="{{ codigo or '' }}" maxlength="2" required autofocus>
               <button class="btn btn-primary" type="submit">Verificar cobertura</button>
             </div>
             <div class="form-text">Exemplos cadastrados: BR, PT, ES, FR, IT, US, CA, JP.</div>
@@ -43,7 +43,7 @@
                 <i class="bi bi-x-circle-fill fs-4 me-2"></i>
                 <div>
                   <h6 class="alert-heading mb-0 fw-bold">SEM COBERTURA</h6>
-                  <small>O país com código <strong>{{ codigo_consultado }}</strong> não está cadastrado na GlobalSIM.</small>
+                  <small>O país com código <strong>{{ codigo }}</strong> não está cadastrado na GlobalSIM.</small>
                 </div>
               </div>
             </div>

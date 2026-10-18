@@ -1,11 +1,27 @@
 """
-Módulo da Tabela Hash - Etapa 1
-Implementação manual da Tabela Hash para gerenciamento de países atendidos.
-Inclui tratamento de colisões e métricas de instrumentação.
+Módulo: Tabela Hash (Etapa 1)
+Disciplina: Estruturas de Dados II - UNEB
+Equipe: Arthur Felipe, Lucas Vinicius, Raphael Lopes
+
+Objetivo:
+Implementar uma Tabela Hash própria para gerenciar os países atendidos pela GlobalSIM.
+A chave de busca e dispersão é o código internacional do país (ex: "BR", "IT", "US").
+
+Requisitos e Orientações:
+1. Escolher uma função de hash adequada para strings curtas (ex: método da multiplicação, 
+   polinomial ou soma ponderada com módulo pelo tamanho da tabela).
+2. Definir a política de tratamento de colisões (recomendado: Encadeamento Separado 
+   com lista encadeada ou Sondagem Aberta).
+3. Implementar métodos de inserção, busca, remoção e listagem completa.
+4. Incluir instrumentação para monitorar:
+   - Fator de carga (alpha = N / M)
+   - Contagem de colisões
+   - Distribuição de elementos nos buckets
 """
 
+
 class NoHash:
-    """Nó para encadeamento de elementos com colisões na Tabela Hash."""
+    """Nó para encadeamento de colisões na Tabela Hash."""
     def __init__(self, chave: str, valor: dict):
         self.chave = chave
         self.valor = valor
@@ -14,112 +30,69 @@ class NoHash:
 
 class TabelaHash:
     """
-    Tabela Hash implementada para o domínio de países atendidos da GlobalSIM.
-    Utiliza encadeamento separado para tratamento de colisões.
+    Estrutura de Tabela Hash para armazenamento e busca de países.
     """
     def __init__(self, capacidade_inicial: int = 17):
+        # Capacidade inicial da tabela (geralmente um número primo)
         self.capacidade = capacidade_inicial
         self.tamanho = 0
         self.buckets = [None] * self.capacidade
         self.total_colisoes = 0
 
-    def _funcao_hash(self, chave: str) -> int:
+    def _hash(self, chave: str) -> int:
         """
-        Função de espalhamento baseada em método polinomial com base prima (31).
-        Gera índices bem distribuídos para códigos de países (ex: 'BR', 'US', 'IT').
+        Função de dispersão (hash).
+        Calcula o índice correspondente para a chave fornecida.
         """
-        hash_val = 0
-        for char in str(chave).strip().upper():
-            hash_val = (hash_val * 31 + ord(char)) % self.capacidade
-        return hash_val
+        # TODO: Implementar o cálculo do índice hash para a string
+        pass
 
-    def inserir(self, chave: str, valor: dict) -> None:
-        """Insere ou atualiza um registro associado à chave."""
-        chave = str(chave).strip().upper()
-        indice = self._funcao_hash(chave)
-        atual = self.buckets[indice]
-
-        # Caso bucket vazio
-        if atual is None:
-            self.buckets[indice] = NoHash(chave, valor)
-            self.tamanho += 1
-            return
-
-        # Tratar colisão ou atualização
-        colidiu = False
-        anterior = None
-        while atual is not None:
-            if atual.chave == chave:
-                atual.valor = valor  # Atualiza valor existente
-                return
-            anterior = atual
-            atual = atual.proximo
-            colidiu = True
-
-        if colidiu:
-            self.total_colisoes += 1
-
-        anterior.proximo = NoHash(chave, valor)
-        self.tamanho += 1
+    def inserir(self, chave: str, valor: dict):
+        """
+        Insere ou atualiza um registro associado à chave.
+        Tratar colisões caso o bucket já possua outro registro.
+        """
+        # TODO: Implementar inserção com tratamento de colisões
+        pass
 
     def buscar(self, chave: str):
-        """Busca um país pelo seu código (chave). Retorna dict ou None."""
-        chave = str(chave).strip().upper()
-        indice = self._funcao_hash(chave)
-        atual = self.buckets[indice]
-        while atual is not None:
-            if atual.chave == chave:
-                return atual.valor
-            atual = atual.proximo
-        return None
+        """
+        Recupera o registro associado à chave em tempo O(1) médio.
+        Retorna o dicionário de dados ou None se não encontrado.
+        """
+        # TODO: Implementar busca na tabela
+        pass
 
     def remover(self, chave: str) -> bool:
-        """Remove o país da tabela pela chave. Retorna True se removido, False caso contrário."""
-        chave = str(chave).strip().upper()
-        indice = self._funcao_hash(chave)
-        atual = self.buckets[indice]
-        anterior = None
-
-        while atual is not None:
-            if atual.chave == chave:
-                if anterior is None:
-                    self.buckets[indice] = atual.proximo
-                else:
-                    anterior.proximo = atual.proximo
-                self.tamanho -= 1
-                return True
-            anterior = atual
-            atual = atual.proximo
-        return False
+        """
+        Remove o registro associado à chave.
+        Retorna True se removido com sucesso, False caso contrário.
+        """
+        # TODO: Implementar remoção mantendo a integridade da estrutura
+        pass
 
     def listar_todos(self) -> list:
-        """Retorna uma lista com todos os registros armazenados."""
-        elementos = []
-        for bucket in self.buckets:
-            atual = bucket
-            while atual is not None:
-                elementos.append(atual.valor)
-                atual = atual.proximo
-        return elementos
+        """
+        Retorna uma lista com todos os registros armazenados na estrutura.
+        Utilizado para persistência e visualização.
+        """
+        # TODO: Percorrer os buckets e retornar todos os elementos válidos
+        return []
 
     def obter_metricas(self) -> dict:
-        """Retorna métricas de instrumentação para análise da estrutura."""
-        buckets_ocupados = sum(1 for b in self.buckets if b is not None)
-        tamanhos_buckets = []
-        for i, b in enumerate(self.buckets):
-            qtd = 0
-            atual = b
-            while atual:
-                qtd += 1
-                atual = atual.proximo
-            tamanhos_buckets.append({"indice": i, "quantidade": qtd})
-
-        fator_carga = self.tamanho / self.capacidade if self.capacidade > 0 else 0
+        """
+        Gera métricas de instrumentação para análise acadêmica da estrutura:
+        - capacidade atual
+        - quantidade de elementos
+        - fator de carga
+        - total de colisões
+        - contagem de itens por bucket
+        """
+        # TODO: Calcular e retornar métricas de análise da tabela
         return {
             "capacidade": self.capacidade,
-            "total_elementos": self.tamanho,
-            "fator_carga": round(fator_carga, 3),
-            "buckets_ocupados": buckets_ocupados,
+            "tamanho": self.tamanho,
+            "fator_carga": 0.0,
             "total_colisoes": self.total_colisoes,
-            "distribuicao": tamanhos_buckets
+            "distribuicao_buckets": []
         }
