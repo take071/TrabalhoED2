@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Consulta de Cobertura — GlobalSIM{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+
+    <div class="d-flex align-items-center mb-4">
+      <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 me-3 fs-3">
+        <i class="bi bi-broadcast-pin"></i>
+      </div>
+      <div>
+        <h2 class="fw-bold mb-0">Consulta de Cobertura Internacional</h2>
+        <p class="text-muted mb-0">Busca indexada por código do país em tempo médio $O(1)$ na Tabela Hash.</p>
+      </div>
+    </div>
+
+    <!-- Card de Busca -->
+    <div class="card custom-card p-4 mb-4">
+      <form action="{{ url_for('cobertura') }}" method="POST">
+        <label for="codigoInput" class="form-label fw-semibold text-secondary">
+          Informe o Código ISO do País (ex: BR, IT, US, JP):
+        </label>
+        <div class="input-group input-group-lg mb-3">
+          <span class="input-group-text bg-light text-muted"><i class="bi bi-search"></i></span>
+          <input 
+            type="text" 
+            class="form-control text-uppercase fw-bold" 
+            id="codigoInput" 
+            name="codigo" 
+            placeholder="Ex: BR" 
+            value="{{ codigo }}" 
+            required
+            maxlength="4"
+            autofocus
+          >
+          <button class="btn btn-primary px-4 fw-semibold" type="submit">
+            Verificar Cobertura
+          </button>
+        </div>
+
+        <!-- Atalhos rápidos para testar -->
+        <div class="d-flex align-items-center flex-wrap gap-2">
+          <span class="text-muted small me-1">Testes rápidos:</span>
+          <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="setCodigo('BR')">BR</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="setCodigo('IT')">IT</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="setCodigo('US')">US</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="setCodigo('JP')">JP</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="setCodigo('PT')">PT</button>
+          <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="setCodigo('ZZ')" title="Código não cadastrado">ZZ (Não Atendido)</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Card de Retorno da Consulta -->
+    {% if consultado %}
+      {% if resultado %}
+        <div class="card border-success shadow-sm mb-4">
+          <div class="card-header bg-success text-white py-3 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-check-circle-fill fs-5"></i>
+              <span class="fw-bold">Cobertura GlobalSIM Confirmada</span>
+            </div>
+            <span class="badge bg-light text-success fw-bold px-3 py-2 fs-6">
+              {{ resultado.tecnologia }}
+            </span>
+          </div>
+          <div class="card-body p-4">
+            <div class="row align-items-center gy-3">
+              <div class="col-md-7">
+                <span class="badge bg-secondary text-uppercase mb-2">{{ resultado.regiao }}</span>
+                <h3 class="fw-bold text-dark mb-1">
+                  {{ resultado.pais }} 
+                  <span class="text-muted fw-normal">({{ resultado.codigo }})</span>
+                </h3>
+                <p class="text-muted mb-3">
+                  <i class="bi bi-reception-4 text-success me-1"></i>
+                  Operadoras Parceiras: <strong>{{ resultado.operadora }}</strong>
+                </p>
+                <div class="d-flex align-items-center text-success small fw-semibold">
+                  <i class="bi bi-shield-check me-1 fs-5"></i>
+                  Compatível com ativação remota via perfil eSIM.
+                </div>
+              </div>
+              <div class="col-md-5 text-md-end">
+                <div class="p-3 bg-light rounded-3 border text-start">
+                  <small class="text-muted d-block fw-semibold mb-1">Operação Interna:</small>
+                  <code class="d-block small text-dark">tabela_paises.buscar("{{ resultado.codigo }}")</code>
+                  <span class="badge bg-primary bg-opacity-10 text-primary mt-2">
+                    <i class="bi bi-speedometer2 me-1"></i> Tempo Médio: $O(1)$
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="card border-warning shadow-sm mb-4">
+          <div class="card-header bg-warning bg-opacity-25 text-dark py-3 d-flex align-items-center gap-2">
+            <i class="bi bi-exclamation-triangle-fill text-warning fs-5"></i>
+            <span class="fw-bold">Destino Sem Cobertura Cadastrada</span>
+          </div>
+          <div class="card-body p-4">
+            <h5 class="fw-bold text-dark">Nenhum país encontrado para o código "{{ codigo }}".</h5>
+            <p class="text-muted mb-3">
+              A busca na Tabela Hash retornou <code>None</code>. Verifique se o código está correto ou cadastre este novo destino no catálogo.
+            </p>
+            <a href="{{ url_for('paises') }}" class="btn btn-outline-primary btn-sm fw-semibold">
+              <i class="bi bi-plus-circle me-1"></i> Cadastrar País "{{ codigo }}"
+            </a>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function setCodigo(cod) {
+    const input = document.getElementById('codigoInput');
+    input.value = cod;
+    input.focus();
+  }
+</script>
+{% endblock %}
+

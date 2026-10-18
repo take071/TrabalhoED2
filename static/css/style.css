@@ -1,0 +1,116 @@
+:root {
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --secondary-color: #0f172a;
+  --accent-color: #06b6d4;
+  --bg-light: #f8fafc;
+  --card-bg: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navbar */
+.navbar-custom {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.navbar-brand img {
+  height: 38px;
+  object-fit: contain;
+}
+
+.nav-link {
+  font-weight: 500;
+  color: #cbd5e1 !important;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: #38bdf8 !important;
+}
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #0284c7 100%);
+  color: #ffffff;
+  border-radius: 1rem;
+  padding: 3rem 2rem;
+  box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.25);
+}
+
+/* Cards */
+.custom-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.85rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.custom-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Metric Cards */
+.metric-card {
+  border-left: 4px solid var(--primary-color);
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Hash Buckets Visualizer */
+.bucket-card {
+  border-radius: 0.65rem;
+  border: 1px solid #e2e8f0;
+  padding: 0.75rem;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.bucket-card.bucket-empty {
+  background-color: #f8fafc;
+  border-style: dashed;
+}
+
+.bucket-card.bucket-occupied {
+  border-color: #93c5fd;
+  background-color: #eff6ff;
+}
+
+.bucket-card.bucket-collision {
+  border-color: #fca5a5;
+  background-color: #fef2f2;
+}
+
+.key-badge {
+  font-family: monospace;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+/* Footer */
+footer {
+  margin-top: auto;
+  background-color: #0f172a;
+  color: #94a3b8;
+}
+

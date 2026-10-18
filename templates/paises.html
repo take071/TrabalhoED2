@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}Países Atendidos — GlobalSIM{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+  <div class="d-flex align-items-center">
+    <div class="p-3 bg-success bg-opacity-10 text-success rounded-3 me-3 fs-3">
+      <i class="bi bi-globe-americas"></i>
+    </div>
+    <div>
+      <h2 class="fw-bold mb-0">Catálogo de Países Atendidos</h2>
+      <p class="text-muted mb-0">Gerenciamento direto na Tabela Hash e sincronizado em <code>arquivos/paises.json</code>.</p>
+    </div>
+  </div>
+
+  <div>
+    <button type="button" class="btn btn-primary px-3 py-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalCadastrar">
+      <i class="bi bi-plus-lg me-1"></i> Cadastrar Novo País
+    </button>
+  </div>
+</div>
+
+<!-- Barra de Filtro Rápido e Contador -->
+<div class="card custom-card p-3 mb-4">
+  <div class="row g-2 align-items-center justify-content-between">
+    <div class="col-md-5">
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-filter"></i></span>
+        <input type="text" id="filtroTabela" class="form-control border-start-0" placeholder="Filtrar por nome, código ou região..." onkeyup="filtrarPaises()">
+      </div>
+    </div>
+    <div class="col-md-auto text-md-end text-muted small">
+      Total cadastrado: <span class="badge bg-primary fs-6">{{ paises|length }}</span> países
+    </div>
+  </div>
+</div>
+
+<!-- Tabela de Países -->
+<div class="card custom-card overflow-hidden">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0" id="tabelaPaises">
+      <thead class="table-light">
+        <tr>
+          <th style="width: 10%;">Código</th>
+          <th style="width: 25%;">País</th>
+          <th style="width: 20%;">Região</th>
+          <th style="width: 25%;">Operadoras Parceiras</th>
+          <th style="width: 10%;">Tecnologia</th>
+          <th style="width: 10%;" class="text-end">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in paises %}
+          <tr>
+            <td>
+              <span class="badge bg-dark bg-opacity-75 font-monospace fs-6 px-2 py-1">
+                {{ p.codigo }}
+              </span>
+            </td>
+            <td class="fw-semibold text-dark">{{ p.pais }}</td>
+            <td>
+              <span class="badge bg-light text-secondary border">{{ p.regiao }}</span>
+            </td>
+            <td class="text-muted small">{{ p.operadora }}</td>
+            <td>
+              <span class="badge {% if '5G' in p.tecnologia %}bg-success{% else %}bg-info text-dark{% endif %}">
+                {{ p.tecnologia }}
+              </span>
+            </td>
+            <td class="text-end">
+              <div class="btn-group btn-group-sm">
+                <!-- Botão Editar -->
+                <button 
+                  type="button" 
+                  class="btn btn-outline-secondary" 
+                  title="Editar"
+                  onclick="abrirModalEditar('{{ p.codigo }}', '{{ p.pais }}', '{{ p.regiao }}', '{{ p.operadora }}', '{{ p.tecnologia }}')"
+                >
+                  <i class="bi bi-pencil"></i>
+                </button>
+
+                <!-- Botão Excluir -->
+                <button 
+                  type="button" 
+                  class="btn btn-outline-danger" 
+                  title="Excluir"
+                  onclick="confirmarExclusao('{{ p.codigo }}', '{{ p.pais }}')"
+                >
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="6" class="text-center py-5 text-muted">
+              <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+              Nenhum país cadastrado na base de dados.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal: Cadastrar Novo País -->
+<div class="modal fade" id="modalCadastrar" tabindex="-1" aria-labelledby="modalCadastrarLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="{{ url_for('cadastrar_pais') }}" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="modalCadastrarLabel">
+            <i class="bi bi-plus-circle text-primary me-2"></i>Cadastrar País
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="cadCodigo" class="form-label fw-semibold">Código ISO (2 a 3 letras) *</label>
+            <input type="text" class="form-control text-uppercase font-monospace" id="cadCodigo" name="codigo" placeholder="Ex: DE, AR, CL" required maxlength="4">
+            <div class="form-text">Será a chave primária indexada na Tabela Hash.</div>
+          </div>
+          <div class="mb-3">
+            <label for="cadPais" class="form-label fw-semibold">Nome do País *</label>
+            <input type="text" class="form-control" id="cadPais" name="pais" placeholder="Ex: Alemanha" required>
+          </div>
+          <div class="mb-3">
+            <label for="cadRegiao" class="form-label fw-semibold">Região Geográfica *</label>
+            <select class="form-select" id="cadRegiao" name="regiao" required>
+              <option value="" disabled selected>Selecione a região...</option>
+              <option value="América">América</option>
+              <option value="Europa">Europa</option>
+              <option value="Ásia">Ásia</option>
+              <option value="África">África</option>
+              <option value="Oceania">Oceania</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="cadOperadora" class="form-label fw-semibold">Operadora(s) Parceira(s) *</label>
+            <input type="text" class="form-control" id="cadOperadora" name="operadora" placeholder="Ex: Deutsche Telekom / Vodafone" required>
+          </div>
+          <div class="mb-3">
+            <label for="cadTecnologia" class="form-label fw-semibold">Tecnologia Disponível *</label>
+            <select class="form-select" id="cadTecnologia" name="tecnologia" required>
+              <option value="5G" selected>5G</option>
+              <option value="4G/LTE">4G/LTE</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary fw-semibold">Salvar na Tabela Hash</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Editar País -->
+<div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="formEditar" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="modalEditarLabel">
+            <i class="bi bi-pencil-square text-secondary me-2"></i>Editar País <span id="spanCodigoEditar" class="badge bg-dark font-monospace"></span>
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="editPais" class="form-label fw-semibold">Nome do País *</label>
+            <input type="text" class="form-control" id="editPais" name="pais" required>
+          </div>
+          <div class="mb-3">
+            <label for="editRegiao" class="form-label fw-semibold">Região Geográfica *</label>
+            <select class="form-select" id="editRegiao" name="regiao" required>
+              <option value="América">América</option>
+              <option value="Europa">Europa</option>
+              <option value="Ásia">Ásia</option>
+              <option value="África">África</option>
+              <option value="Oceania">Oceania</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="editOperadora" class="form-label fw-semibold">Operadora(s) Parceira(s) *</label>
+            <input type="text" class="form-control" id="editOperadora" name="operadora" required>
+          </div>
+          <div class="mb-3">
+            <label for="editTecnologia" class="form-label fw-semibold">Tecnologia Disponível *</label>
+            <select class="form-select" id="editTecnologia" name="tecnologia" required>
+              <option value="5G">5G</option>
+              <option value="4G/LTE">4G/LTE</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-success fw-semibold">Atualizar Registro</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Formulário Oculto para Exclusão via POST -->
+<form id="formExcluir" method="POST" style="display: none;"></form>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function filtrarPaises() {
+    const input = document.getElementById('filtroTabela').value.toLowerCase();
+    const rows = document.querySelectorAll('#tabelaPaises tbody tr');
+
+    rows.forEach(row => {
+      const text = row.innerText.toLowerCase();
+      row.style.display = text.includes(input) ? '' : 'none';
+    });
+  }
+
+  function abrirModalEditar(codigo, pais, regiao, operadora, tecnologia) {
+    const form = document.getElementById('formEditar');
+    form.action = `/paises/${encodeURIComponent(codigo)}/editar`;
+    document.getElementById('spanCodigoEditar').innerText = codigo;
+    document.getElementById('editPais').value = pais;
+    document.getElementById('editRegiao').value = regiao;
+    document.getElementById('editOperadora').value = operadora;
+    document.getElementById('editTecnologia').value = tecnologia;
+
+    const modal = new bootstrap.Modal(document.getElementById('modalEditar'));
+    modal.show();
+  }
+
+  function confirmarExclusao(codigo, pais) {
+    if (confirm(`Tem certeza de que deseja remover ${pais} (${codigo}) da Tabela Hash?`)) {
+      const form = document.getElementById('formExcluir');
+      form.action = `/paises/${encodeURIComponent(codigo)}/excluir`;
+      form.submit();
+    }
+  }
+</script>
+{% endblock %}
+
