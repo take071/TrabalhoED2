@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_7937ecb7658071d4a7790f82fb298ad2 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_7937ecb7658071d4a7790f82fb298ad2" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_7937ecb7658071d4a7790f82fb298ad2 = L.map(
+                "map_7937ecb7658071d4a7790f82fb298ad2",
+                {
+                    center: [20.0, 0.0],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 2,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_9700a312fbbfd55027a383db5418c150 = L.tileLayer(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Estri",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_9700a312fbbfd55027a383db5418c150.addTo(map_7937ecb7658071d4a7790f82fb298ad2);
+        
+    
+            var marker_c14173ba6ae41b02d35ab0454889a302 = L.marker(
+                [-14.235, -51.9253],
+                {
+}
+            ).addTo(map_7937ecb7658071d4a7790f82fb298ad2);
+        
+    
+        var popup_7158c0403ff3552133feba950082777c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_326e5db10b54fa8339ef66644c0f63aa = $(`<div id="html_326e5db10b54fa8339ef66644c0f63aa" style="width: 100.0%; height: 100.0%;">Brazil</div>`)[0];
+                popup_7158c0403ff3552133feba950082777c.setContent(html_326e5db10b54fa8339ef66644c0f63aa);
+            
+        
+
+        marker_c14173ba6ae41b02d35ab0454889a302.bindPopup(popup_7158c0403ff3552133feba950082777c)
+        ;
+
+        
+    
+    
+            var marker_091e94e4512302435a9cba6597d08de3 = L.marker(
+                [56.1304, -106.3468],
+                {
+}
+            ).addTo(map_7937ecb7658071d4a7790f82fb298ad2);
+        
+    
+        var popup_fa61feacae240bb0e73d95ea7f469444 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_90112105a374de1d06f42a45e013fbcf = $(`<div id="html_90112105a374de1d06f42a45e013fbcf" style="width: 100.0%; height: 100.0%;">Canada</div>`)[0];
+                popup_fa61feacae240bb0e73d95ea7f469444.setContent(html_90112105a374de1d06f42a45e013fbcf);
+            
+        
+
+        marker_091e94e4512302435a9cba6597d08de3.bindPopup(popup_fa61feacae240bb0e73d95ea7f469444)
+        ;
+
+        
+    
+    
+            var marker_329297b99fcb27c7e708e5bad42bb59a = L.marker(
+                [46.2276, 2.2137],
+                {
+}
+            ).addTo(map_7937ecb7658071d4a7790f82fb298ad2);
+        
+    
+        var popup_020a0315a0f111629f84e8194c88a246 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_1449542823b01ae7a7f2724d4040bf60 = $(`<div id="html_1449542823b01ae7a7f2724d4040bf60" style="width: 100.0%; height: 100.0%;">France</div>`)[0];
+                popup_020a0315a0f111629f84e8194c88a246.setContent(html_1449542823b01ae7a7f2724d4040bf60);
+            
+        
+
+        marker_329297b99fcb27c7e708e5bad42bb59a.bindPopup(popup_020a0315a0f111629f84e8194c88a246)
+        ;
+
+        
+    
+    
+            var marker_5c5a13040d14df0a62d1b341176689d0 = L.marker(
+                [36.2048, 138.2529],
+                {
+}
+            ).addTo(map_7937ecb7658071d4a7790f82fb298ad2);
+        
+    
+        var popup_fb93137b76161f11c65cd3ae1eacb5e2 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_b5ee859b515965643e752ae6b364d2d5 = $(`<div id="html_b5ee859b515965643e752ae6b364d2d5" style="width: 100.0%; height: 100.0%;">Japan</div>`)[0];
+                popup_fb93137b76161f11c65cd3ae1eacb5e2.setContent(html_b5ee859b515965643e752ae6b364d2d5);
+            
+        
+
+        marker_5c5a13040d14df0a62d1b341176689d0.bindPopup(popup_fb93137b76161f11c65cd3ae1eacb5e2)
+        ;
+
+        
+    
+    
+            var marker_a1498b902ec87c763144cd24f627f6fc = L.marker(
+                [41.8719, 12.5674],
+                {
+}
+            ).addTo(map_7937ecb7658071d4a7790f82fb298ad2);
+        
+    
+        var popup_c4681402c7bfbe5f86fc37393027eb60 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_008ee1d7f5f739bc1f42ebf26b2975c5 = $(`<div id="html_008ee1d7f5f739bc1f42ebf26b2975c5" style="width: 100.0%; height: 100.0%;">Italy</div>`)[0];
+                popup_c4681402c7bfbe5f86fc37393027eb60.setContent(html_008ee1d7f5f739bc1f42ebf26b2975c5);
+            
+        
+
+        marker_a1498b902ec87c763144cd24f627f6fc.bindPopup(popup_c4681402c7bfbe5f86fc37393027eb60)
+        ;
+
+        
+    
+    
+            var marker_e6c08ef42a20c1d8b77c85593f735f61 = L.marker(
+                [40.4637, -3.7492],
+                {
+}
+            ).addTo(map_7937ecb7658071d4a7790f82fb298ad2);
+        
+    
+        var popup_52a230197893a43dab8a60cab7285e4e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_f08c912717041083adaf316e3ff4838c = $(`<div id="html_f08c912717041083adaf316e3ff4838c" style="width: 100.0%; height: 100.0%;">Espanha</div>`)[0];
+                popup_52a230197893a43dab8a60cab7285e4e.setContent(html_f08c912717041083adaf316e3ff4838c);
+            
+        
+
+        marker_e6c08ef42a20c1d8b77c85593f735f61.bindPopup(popup_52a230197893a43dab8a60cab7285e4e)
+        ;
+
+        
+    
+    
+            var marker_1207f8fa0f8c81652b75eb8173a9cef9 = L.marker(
+                [39.3999, -8.2245],
+                {
+}
+            ).addTo(map_7937ecb7658071d4a7790f82fb298ad2);
+        
+    
+        var popup_4e2b5010db6b4d20b11aae9bf5f51dd5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_98c5409fa1cf783e30c5c6e57d1a110a = $(`<div id="html_98c5409fa1cf783e30c5c6e57d1a110a" style="width: 100.0%; height: 100.0%;">Portugal</div>`)[0];
+                popup_4e2b5010db6b4d20b11aae9bf5f51dd5.setContent(html_98c5409fa1cf783e30c5c6e57d1a110a);
+            
+        
+
+        marker_1207f8fa0f8c81652b75eb8173a9cef9.bindPopup(popup_4e2b5010db6b4d20b11aae9bf5f51dd5)
+        ;
+
+        
+    
+</script>
+</html>

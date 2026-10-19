@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Instrumentação da Tabela Hash · GlobalSIM{% endblock %}
+
+{% block content %}
+<!-- Cabeçalho da Página em Deep Navy -->
+<section class="page-header-navy bg-grid-tech">
+  <div class="container">
+    <div class="max-w-2xl">
+      <span class="eyebrow-badge mb-2">Instrumentação Acadêmica</span>
+      <h1 class="display-6 fw-bold text-white font-heading mb-1">Tabela Hash &bull; Encadeamento Separado</h1>
+      <p class="text-slate-300 mb-0 font-mono" style="color: #94a3b8; font-size: 0.9rem;">
+        NoHash[] buckets = new NoHash[17] &bull; Chave: Código ISO
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+  
+  <!-- 4 Métricas Fundamentais em Estilo Minimalista -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+      <div class="card card-gs p-3 h-100">
+        <div class="small fw-semibold text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Capacidade ($M$)</div>
+        <div class="font-mono fs-2 fw-bold text-dark my-1">{{ metricas.capacidade }}</div>
+        <div class="small text-muted" style="font-size: 0.75rem;">Buckets alocados</div>
+      </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <div class="card card-gs p-3 h-100">
+        <div class="small fw-semibold text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Elementos ($N$)</div>
+        <div class="font-mono fs-2 fw-bold my-1" style="color: var(--azure);">{{ metricas.tamanho }}</div>
+        <div class="small text-muted" style="font-size: 0.75rem;">Países ativos</div>
+      </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <div class="card card-gs p-3 h-100">
+        <div class="small fw-semibold text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Fator de Carga (&alpha;)</div>
+        <div class="font-mono fs-2 fw-bold my-1" style="color: var(--success);">{{ metricas.fator_carga }}</div>
+        <div class="small text-muted" style="font-size: 0.75rem;">Razão $N / M$ (&le; 0.75)</div>
+      </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <div class="card card-gs p-3 h-100">
+        <div class="small fw-semibold text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Colisões Reais</div>
+        <div class="font-mono fs-2 fw-bold my-1" style="color: {% if metricas.total_colisoes > 0 %}var(--gold){% else %}#64748b{% endif %};">
+          {{ metricas.total_colisoes }}
+        </div>
+        <div class="small text-muted" style="font-size: 0.75rem;">Tratadas via lista encadeada</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estrutura Principal: Grade de Buckets + Painel de Simulação -->
+  <div class="row g-4">
+    
+    <!-- Coluna Esquerda: Visualizador Escuro dos 17 Buckets (como no bucket-grid.tsx) -->
+    <div class="col-xl-8">
+      <div class="card card-navy overflow-hidden shadow-elev-3">
+        
+        <div class="p-3 px-4 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2" style="border-color: rgba(255, 255, 255, 0.08) !important;">
+          <div>
+            <h6 class="fw-bold font-heading text-white mb-0">Dispersão dos Buckets [00 a 16]</h6>
+            <span class="small font-mono text-slate-400" style="font-size: 0.75rem;">h(chave) = (&sum; c &bull; 31) % 17</span>
+          </div>
+
+          <div class="d-flex align-items-center gap-3 small font-mono" style="font-size: 0.75rem; color: #94a3b8;">
+            <span class="d-inline-flex align-items-center gap-1.5">
+              <span style="width: 10px; height: 10px; border-radius: 2px; background: rgba(37, 99, 235, 0.4); border: 1px solid var(--azure);"></span> Nó
+            </span>
+            <span class="d-inline-flex align-items-center gap-1.5">
+              <span style="width: 10px; height: 10px; border-radius: 2px; background: rgba(245, 158, 11, 0.4); border: 1px solid var(--gold);"></span> Colisão
+            </span>
+          </div>
+        </div>
+
+        <div class="p-0">
+          {% for b in metricas.distribuicao_buckets %}
+            <div class="bucket-row" id="bucket-row-{{ b.indice }}">
+              
+              <!-- Índice do Bucket -->
+              <span class="bucket-index {% if b.total > 0 %}has-item{% endif %}">
+                [{{ "%02d"|format(b.indice) }}]
+              </span>
+
+              <span class="node-arrow">&rarr;</span>
+
+              <!-- Lista Encadeada no Bucket -->
+              {% if b.total > 0 %}
+                {% for chave in b.chaves %}
+                  <span class="node-box {% if b.total > 1 %}collision-target{% endif %}" title="Chave: {{ chave }}">
+                    {{ chave }} &bull;
+                  </span>
+                  <span class="node-arrow">&rarr;</span>
+                {% endfor %}
+                <span class="node-null">null</span>
+
+                {% if b.total > 1 %}
+                  <span class="badge-collision ms-auto">
+                    {{ b.total - 1 }} colisão
+                  </span>
+                {% endif %}
+              {% else %}
+                <span class="node-null">null</span>
+              {% endif %}
+
+            </div>
+          {% endfor %}
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Coluna Direita: Simulador em Tempo Real da Função Hash -->
+    <div class="col-xl-4">
+      
+      <!-- Card: Simulador Interativo -->
+      <div class="card card-gs p-4 mb-4 shadow-elev-1">
+        <h6 class="fw-bold font-heading text-dark mb-1">Simular Função de Dispersão</h6>
+        <p class="text-muted small mb-3">
+          Calcule a posição exata de qualquer chave e veja o cálculo polinomial passo a passo.
+        </p>
+
+        <div class="input-group mb-3">
+          <input 
+            type="text" 
+            id="simuladorChave" 
+            class="form-control font-mono text-uppercase fw-bold shadow-none" 
+            placeholder="Ex: BR, DE, CL" 
+            maxlength="4"
+            oninput="calcularHashSimulado()"
+          >
+          <button class="btn btn-azure px-3" type="button" onclick="calcularHashSimulado()">
+            Calcular
+          </button>
+        </div>
+
+        <!-- Feedback Dinâmico do Simulador -->
+        <div id="resultadoSimulacao" class="p-3 rounded-3 font-mono small" style="background: var(--navy); color: #cbd5e1; display: none;">
+          <div class="text-secondary small mb-1">// Base polinomial 31:</div>
+          <div id="passosCalculo" class="text-slate-300 small mb-2"></div>
+          <div class="pt-2 border-top border-secondary d-flex justify-content-between align-items-center">
+            <span class="text-white fw-bold">Índice Resultante:</span>
+            <span id="indiceFinal" class="fs-6 fw-bold" style="color: var(--cyan);">[00]</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Teórico & Algorítmico Minimalista -->
+      <div class="card card-gs p-4 shadow-elev-1">
+        <h6 class="fw-bold font-heading text-dark mb-2">Fundamentos do Algoritmo</h6>
+        <p class="text-muted small mb-2">
+          <strong>Função de Horner:</strong> Cada caractere $c_i$ da chave é acumulado com base 31:
+        </p>
+        <div class="p-2 rounded bg-light font-mono small text-dark mb-3" style="font-size: 0.75rem;">
+          h = (h &times; 31 + ord(c)) % 17
+        </div>
+        <p class="text-muted small mb-0">
+          <strong>Resolução de Colisão:</strong> Encadeamento separado com ponteiros em nó <code>NoHash</code>, mantendo complexidade média constante $O(1)$.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function calcularHashSimulado() {
+    const input = document.getElementById('simuladorChave');
+    const valor = input.value.trim().toUpperCase();
+    const box = document.getElementById('resultadoSimulacao');
+    const passosDiv = document.getElementById('passosCalculo');
+    const indiceSpan = document.getElementById('indiceFinal');
+
+    if (!valor) {
+      box.style.display = 'none';
+      return;
+    }
+
+    let h = 0;
+    let passosHtml = '';
+    const M = 17;
+
+    for (let i = 0; i < valor.length; i++) {
+      const c = valor.charCodeAt(i);
+      const char = valor.charAt(i);
+      h = (h * 31 + c) % M;
+      passosHtml += `'${char}' (${c}) &rarr; h = <span style="color: var(--cyan);">${h}</span><br>`;
+    }
+
+    passosDiv.innerHTML = passosHtml;
+    const formatado = String(h).padStart(2, '0');
+    indiceSpan.innerText = `[${formatado}]`;
+    box.style.display = 'block';
+
+    // Destaca suavemente a linha correspondente do bucket
+    document.querySelectorAll('.bucket-row').forEach(r => r.style.backgroundColor = '');
+    const rowAlvo = document.getElementById(`bucket-row-${h}`);
+    if (rowAlvo) {
+      rowAlvo.style.backgroundColor = 'rgba(0, 210, 255, 0.08)';
+    }
+  }
+</script>
+{% endblock %}

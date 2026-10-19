@@ -1,0 +1,67 @@
+[
+  {
+    "codigo": "CA",
+    "pais": "Canadá",
+    "regiao": "América",
+    "operadora": "Rogers / Bell",
+    "tecnologia": "5G"
+  },
+  {
+    "codigo": "IT",
+    "pais": "Itália",
+    "regiao": "Europa",
+    "operadora": "TIM / Vodafone IT",
+    "tecnologia": "5G"
+  },
+  {
+    "codigo": "BR",
+    "pais": "Brasil",
+    "regiao": "América",
+    "operadora": "Vivo / Claro / TIM",
+    "tecnologia": "5G"
+  },
+  {
+    "codigo": "AR",
+    "pais": "Argentina",
+    "regiao": "América",
+    "operadora": "Telekom",
+    "tecnologia": "5G",
+    "lat": -34.9964963,
+    "lon": -64.9672817
+  },
+  {
+    "codigo": "FR",
+    "pais": "França",
+    "regiao": "Europa",
+    "operadora": "Orange / SFR",
+    "tecnologia": "5G"
+  },
+  {
+    "codigo": "JP",
+    "pais": "Japão",
+    "regiao": "Ásia",
+    "operadora": "NTT Docomo / SoftBank",
+    "tecnologia": "5G"
+  },
+  {
+    "codigo": "ES",
+    "pais": "Espanha",
+    "regiao": "Europa",
+    "operadora": "Movistar / Orange",
+    "tecnologia": "5G"
+  },
+  {
+    "codigo": "PT",
+    "pais": "Portugal",
+    "regiao": "Europa",
+    "operadora": "MEO / NOS / Vodafone",
+    "tecnologia": "5G"
+  },
+  {
+    "codigo": "US",
+    "pais": "Estados Unidos",
+    "regiao": "América",
+    "operadora": "T-Mobile / AT&T / Verizon",
+    "tecnologia": "5G"
+  }
+]
