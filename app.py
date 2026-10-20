@@ -156,7 +156,12 @@ def cobertura():
 def paises():
     """Listagem de todos os países atendidos cadastrados na Tabela Hash."""
     lista_paises = tabela_paises.listar_todos()
-    return render_template("paises.html", paises=lista_paises)
+    return render_template(
+        "paises.html",
+        paises=lista_paises,
+        form_data={},
+        cadastro_erro=False,
+    )
 
 
 # Inicializa o buscador de coordenadas
@@ -179,10 +184,24 @@ def cadastrar_pais():
         flash("Todos os campos são obrigatórios para o cadastro!", "danger")
         return redirect(url_for("paises"))
 
-    # 1. Busca a latitude e longitude usando o nome do país
-    localizacao = geolocator.geocode(pais)
-    lat = localizacao.latitude if localizacao else 0
-    lon = localizacao.longitude if localizacao else 0
+    # Aceita apenas resultados geográficos classificados como países.
+    localizacao = geolocator.geocode(pais, featuretype="country")
+    if localizacao is None:
+        return render_template(
+            "paises.html",
+            paises=tabela_paises.listar_todos(),
+            cadastro_erro=True,
+            form_data={
+                "codigo": codigo,
+                "pais": pais,
+                "regiao": regiao,
+                "operadora": operadora,
+                "tecnologia": tecnologia,
+            },
+        )
+
+    lat = localizacao.latitude
+    lon = localizacao.longitude
 
     # Verifica se já existia para dar o aviso correto (inserção ou atualização)
     existente = tabela_paises.buscar(codigo)

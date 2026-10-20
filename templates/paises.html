@@ -148,32 +148,35 @@
         <div class="modal-body p-4">
           <div class="mb-3">
             <label for="cadCodigo" class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.75rem;">Código ISO (Chave Hash) *</label>
-            <input type="text" class="form-control font-mono text-uppercase fw-bold shadow-none" id="cadCodigo" name="codigo" placeholder="Ex: DE, AR, CL" required maxlength="4">
+            <input type="text" class="form-control font-mono text-uppercase fw-bold shadow-none" id="cadCodigo" name="codigo" placeholder="Ex: DE, AR, CL" value="{{ form_data.codigo|default('') }}" required maxlength="4">
           </div>
           <div class="mb-3">
             <label for="cadPais" class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.75rem;">Nome do País *</label>
-            <input type="text" class="form-control shadow-none" id="cadPais" name="pais" placeholder="Ex: Alemanha" required>
+            <input type="text" class="form-control shadow-none{% if cadastro_erro|default(false) %} is-invalid{% endif %}" id="cadPais" name="pais" placeholder="Ex: Alemanha" value="{{ form_data.pais|default('') }}" {% if cadastro_erro|default(false) %}aria-invalid="true"{% endif %} required>
+            {% if cadastro_erro|default(false) %}
+              <div class="invalid-feedback d-block">País inexistente</div>
+            {% endif %}
           </div>
           <div class="mb-3">
             <label for="cadRegiao" class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.75rem;">Região *</label>
             <select class="form-select shadow-none" id="cadRegiao" name="regiao" required>
               <option value="" disabled selected>Selecione...</option>
-              <option value="América">América</option>
-              <option value="Europa">Europa</option>
-              <option value="Ásia">Ásia</option>
-              <option value="África">África</option>
-              <option value="Oceania">Oceania</option>
+              <option value="América" {% if form_data.regiao|default('') == 'América' %}selected{% endif %}>América</option>
+              <option value="Europa" {% if form_data.regiao|default('') == 'Europa' %}selected{% endif %}>Europa</option>
+              <option value="Ásia" {% if form_data.regiao|default('') == 'Ásia' %}selected{% endif %}>Ásia</option>
+              <option value="África" {% if form_data.regiao|default('') == 'África' %}selected{% endif %}>África</option>
+              <option value="Oceania" {% if form_data.regiao|default('') == 'Oceania' %}selected{% endif %}>Oceania</option>
             </select>
           </div>
           <div class="mb-3">
             <label for="cadOperadora" class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.75rem;">Operadora(s) Parceira(s) *</label>
-            <input type="text" class="form-control shadow-none" id="cadOperadora" name="operadora" placeholder="Ex: Deutsche Telekom / Vodafone" required>
+            <input type="text" class="form-control shadow-none" id="cadOperadora" name="operadora" placeholder="Ex: Deutsche Telekom / Vodafone" value="{{ form_data.operadora|default('') }}" required>
           </div>
           <div class="mb-3">
             <label for="cadTecnologia" class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.75rem;">Rede *</label>
             <select class="form-select shadow-none" id="cadTecnologia" name="tecnologia" required>
-              <option value="5G" selected>5G Ultra</option>
-              <option value="4G/LTE">4G / LTE</option>
+              <option value="5G" {% if form_data.tecnologia|default('5G') == '5G' %}selected{% endif %}>5G Ultra</option>
+              <option value="4G/LTE" {% if form_data.tecnologia|default('5G') == '4G/LTE' %}selected{% endif %}>4G / LTE</option>
             </select>
           </div>
         </div>
@@ -295,5 +298,9 @@
       form.submit();
     }
   }
+
+  {% if cadastro_erro|default(false) %}
+    new bootstrap.Modal(document.getElementById('modalCadastrar')).show();
+  {% endif %}
 </script>
 {% endblock %}
