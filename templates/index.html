@@ -1,30 +1,30 @@
 {% extends "base.html" %}
 
-{% block title %}GlobalSIM · Internet Móvel Internacional{% endblock %}
+{% block title %}GlobalSIM · Gestão de Cobertura Internacional{% endblock %}
 
 {% block content %}
-<!-- Hero Banner Minimalista com Visual Identity Navy/Tech -->
-<section class="hero-banner bg-grid-tech">
+<!-- Banner Principal: Contexto do Sistema e Busca Rápida -->
+<section class="hero-banner">
   <div class="container">
     <div class="row align-items-center gy-5">
       
       <!-- Coluna de Texto e Consulta Rápida -->
       <div class="col-lg-7">
         
-        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-4" style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); color: var(--gold); font-size: 0.8rem; font-weight: 600;">
-          <i class="bi bi-lightning-charge-fill"></i> Ativação instantânea via eSIM &bull; Etapa 1
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: var(--sky); font-size: 0.8rem; font-weight: 600;">
+          <i class="bi bi-hdd-network"></i> Estrutura de Dados II &bull; Etapa 1
         </div>
 
-        <h1 class="display-5 fw-extrabold text-white mb-3" style="font-weight: 800; line-height: 1.15;">
-          Dados móveis no mundo inteiro, <span style="background: linear-gradient(to right, var(--sky), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">roteados em O(1).</span>
+        <h1 class="display-5 fw-bold text-white mb-3" style="line-height: 1.2;">
+          Gestão e Consulta de <span style="color: var(--sky);">Cobertura Internacional</span>
         </h1>
 
-        <p class="lead text-slate-300 mb-4" style="font-size: 1.1rem; max-width: 580px; color: #cbd5e1;">
-          Conectividade internacional contínua sem troca física de chip. O catálogo e a cobertura são operados através de uma <strong>Tabela Hash própria</strong> com dispersão polinomial.
+        <p class="lead text-slate-300 mb-4" style="font-size: 1.05rem; max-width: 580px; color: #cbd5e1;">
+          Verificação imediata de operadoras parceiras e tecnologia de conexão indexadas em memória através de uma <strong>Tabela Hash própria</strong> com dispersão polinomial e encadeamento separado.
         </p>
 
         <!-- Formulário Direto de Consulta de Cobertura -->
-        <div class="card p-2 rounded-4 shadow-lg mb-4" style="background: rgba(255, 255, 255, 0.98); border: 1px solid rgba(255, 255, 255, 0.2); max-width: 540px;">
+        <div class="card p-2 rounded-4 shadow-lg mb-4" style="background: rgba(255, 255, 255, 0.98); border: 1px solid rgba(255, 255, 255, 0.2); max-width: 520px;">
           <form action="{{ url_for('cobertura') }}" method="POST" class="d-flex align-items-center gap-2">
             <div class="input-group">
               <span class="input-group-text bg-transparent border-0 text-muted ps-3">
@@ -34,14 +34,14 @@
                 type="text" 
                 class="form-control border-0 font-monospace text-uppercase fw-semibold shadow-none text-dark" 
                 name="codigo" 
-                placeholder="Código ISO (ex: BR, IT, US)" 
+                placeholder="Código ISO do país (ex: BR, IT, US)" 
                 maxlength="4" 
                 required
                 style="font-size: 0.95rem;"
               >
             </div>
             <button type="submit" class="btn btn-azure px-4 py-2 text-nowrap">
-              Verificar
+              Consultar
             </button>
           </form>
         </div>
@@ -49,7 +49,7 @@
         <!-- Pílulas de Acesso Rápido -->
         <div class="d-flex align-items-center flex-wrap gap-2 mb-4">
           <span class="small text-slate-400" style="color: #94a3b8; font-size: 0.85rem;">Testes rápidos:</span>
-          {% for cod in ['BR', 'US', 'JP', 'IT', 'PT', 'FR'] %}
+          {% for cod in ['BR', 'US', 'JP', 'IT', 'PT', 'FR', 'DE'] %}
             <form action="{{ url_for('cobertura') }}" method="POST" class="d-inline">
               <input type="hidden" name="codigo" value="{{ cod }}">
               <button type="submit" class="btn btn-sm rounded-pill font-mono py-1 px-3" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #e2e8f0; font-size: 0.75rem;">
@@ -59,7 +59,7 @@
           {% endfor %}
         </div>
 
-        <!-- 3 Métricas Essenciais -->
+        <!-- Métricas Reais da Estrutura de Dados -->
         <div class="d-flex align-items-center gap-4 pt-3 border-top" style="border-color: rgba(255, 255, 255, 0.1) !important;">
           <div>
             <div class="font-mono fs-4 fw-bold text-white">O(1)</div>
@@ -67,59 +67,43 @@
           </div>
           <div style="width: 1px; height: 32px; background: rgba(255, 255, 255, 0.1);"></div>
           <div>
-            <div class="font-mono fs-4 fw-bold" style="color: var(--sky);">&lt; 60s</div>
-            <div class="small" style="color: #94a3b8; font-size: 0.8rem;">Ativação eSIM</div>
+            <div class="font-mono fs-4 fw-bold" style="color: var(--sky);">M = {{ metricas.capacidade }}</div>
+            <div class="small" style="color: #94a3b8; font-size: 0.8rem;">Buckets alocados</div>
           </div>
           <div style="width: 1px; height: 32px; background: rgba(255, 255, 255, 0.1);"></div>
           <div>
-            <div class="font-mono fs-4 fw-bold" style="color: var(--gold);">5G</div>
-            <div class="small" style="color: #94a3b8; font-size: 0.8rem;">Rotas globais</div>
+            <div class="font-mono fs-4 fw-bold" style="color: var(--gold);">&alpha; = {{ metricas.fator_carga }}</div>
+            <div class="small" style="color: #94a3b8; font-size: 0.8rem;">Fator de carga (N/M)</div>
           </div>
         </div>
 
       </div>
 
-     <!-- Coluna Direita: Mapa Interativo Limpo -->
-      <div class="col-lg-5 text-center position-relative">
-        <div class="rounded-4 overflow-hidden shadow-lg position-relative" style="height: 420px; width: 100%; border: 1px solid rgba(255, 255, 255, 0.15); background: #0f172a; padding: 0; margin: 0;">
-  
-          <!-- Força o mapa a ocupar 100% do espaço sem criar bordas -->
-          <style>
-            .folium-map, .folium-map iframe {
-              height: 100% !important;
-              width: 100% !important;
-              margin: 0 !important;
-              padding: 0 !important;
-              border: none !important;
-              display: block !important;
-            }
-          </style>
-
-          <!-- Injeção do Mapa do Folium gerado no Flask -->
-          {{ mapa|safe }}
-
-          <!-- Borda interna de acabamento -->
-          <div class="position-absolute top-0 start-0 w-100 h-100 rounded-4 pointer-events-none" style="border: 1px solid rgba(255,255,255,0.1); pointer-events: none; z-index: 1000;"></div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-          
-          <!-- Badge Flutuante Superior -->
-          <div class="position-absolute top-0 end-0 mt-3 me-2 p-2 px-3 rounded-3 shadow-lg d-flex align-items-center gap-2" style="background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.15);">
-            <span class="rounded-circle" style="width: 8px; height: 8px; background-color: var(--cyan); box-shadow: 0 0 6px var(--cyan);"></span>
-            <div class="text-start">
-              <div class="font-mono text-slate-400" style="font-size: 0.7rem; color: #94a3b8;">GRU &rarr; LIS &rarr; FCO</div>
-              <div class="small fw-semibold text-white" style="font-size: 0.8rem;">3 destinos &bull; 1 eSIM</div>
+      <!-- Coluna Direita: Mapa Interativo Fiel à Tabela Hash -->
+      <div class="col-lg-5">
+        <div class="card card-navy p-1 rounded-4 shadow-lg overflow-hidden" style="border: 1px solid rgba(255, 255, 255, 0.15);">
+          <div class="d-flex align-items-center justify-content-between p-3 border-bottom" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-geo-alt-fill" style="color: var(--sky);"></i>
+              <span class="small fw-semibold text-white">Destinos com Cobertura Ativa</span>
             </div>
+            <span class="badge rounded-pill font-mono" style="background: rgba(56, 189, 248, 0.15); color: var(--sky); font-size: 0.75rem;">
+              {{ metricas.tamanho }} países
+            </span>
           </div>
 
-          <!-- Badge Flutuante Inferior -->
-          <div class="position-absolute bottom-0 start-0 mb-3 ms-2 p-2 px-3 rounded-3 shadow-lg d-flex align-items-center gap-2" style="background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.15);">
-            <span class="font-mono fw-bold" style="color: var(--gold); font-size: 0.85rem;">h("BR") = 3</span>
-            <span class="small text-slate-300" style="font-size: 0.8rem; color: #cbd5e1;">M=17 buckets</span>
+          <div style="height: 380px; width: 100%; position: relative;">
+            <style>
+              .folium-map, .folium-map iframe {
+                height: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+                display: block !important;
+              }
+            </style>
+            {{ mapa|safe }}
           </div>
         </div>
       </div>
@@ -128,14 +112,14 @@
   </div>
 </section>
 
-<!-- Seção Minimalista: Módulos do Sistema -->
+<!-- Módulos do Sistema -->
 <section class="py-5">
   <div class="container">
     
     <div class="d-flex justify-content-between align-items-end mb-4">
       <div>
         <span class="eyebrow-badge mb-1">Módulos da Aplicação</span>
-        <h3 class="fw-bold text-dark font-heading mb-0">Gestão de Cobertura e Estrutura</h3>
+        <h3 class="fw-bold text-dark font-heading mb-0">Gestão e Instrumentação</h3>
       </div>
       <div class="small text-muted font-mono">
         {{ metricas.tamanho }} países &bull; &alpha;={{ metricas.fator_carga }}
@@ -188,7 +172,9 @@
             <span class="d-inline-flex p-3 rounded-3" style="background: rgba(0, 210, 255, 0.1); color: var(--azure-600);">
               <i class="bi bi-diagram-3 fs-4"></i>
             </span>
-            <span class="badge-collision">{{ metricas.total_colisoes }} colisões</span>
+            <span class="badge-collision">
+              {{ metricas.total_colisoes }} {% if metricas.total_colisoes == 1 %}colisão{% else %}colisões{% endif %}
+            </span>
           </div>
           <h5 class="fw-bold font-heading mb-2">Instrumentação Hash</h5>
           <p class="text-muted small flex-grow-1 mb-4">

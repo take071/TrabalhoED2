@@ -73,7 +73,7 @@ carregar_dados()
 
 @app.route("/")
 def index():
-    # Inicialização do mapa
+    # Inicialização do mapa mundial centrado
     m = folium.Map(
         location=[20, 0], 
         zoom_start=2,
@@ -83,24 +83,15 @@ def index():
         attr='Esri'
     )
 
-    # 1. Marcações fixas originais
-    folium.Marker(location=[-14.2350, -51.9253], popup='Brazil').add_to(m)
-    folium.Marker(location=[56.1304, -106.3468], popup='Canada').add_to(m)
-    folium.Marker(location=[46.2276, 2.2137], popup='France').add_to(m)
-    folium.Marker(location=[36.2048, 138.2529], popup='Japan').add_to(m)
-    folium.Marker(location=[41.8719, 12.5674], popup='Italy').add_to(m)
-    folium.Marker(location=[40.4637, -3.7492], popup='Espanha').add_to(m)
-    folium.Marker(location=[39.3999, -8.2245], popup='Portugal').add_to(m)
-
-    # 2. Marcações dinâmicas (cadastradas pelo usuário via Geopy/Tabela Hash)
+    # Marcações dinâmicas a partir da Tabela Hash em memória
     paises_cadastrados = tabela_paises.listar_todos()
     for p in paises_cadastrados:
         lat = p.get('lat')
         lon = p.get('lon')
         
-        # Só adiciona o marcador se o Geopy encontrou as coordenadas no cadastro
+        # Só adiciona o marcador se as coordenadas existirem
         if lat and lon:
-            texto_popup = f"<b>{p['pais']}</b> ({p['codigo']})<br><small>{p['operadora']}</small>"
+            texto_popup = f"<b>{p['pais']}</b> ({p['codigo']})<br><small>{p['operadora']}</small><br><span style='color: green;'>{p.get('tecnologia', '5G')}</span>"
             folium.Marker(
                 location=[lat, lon],
                 popup=texto_popup
@@ -129,7 +120,7 @@ def cobertura():
                 lat = resultado.get('lat')
                 lon = resultado.get('lon')
                 
-                # CORREÇÃO: Se o país for antigo e não tiver lat/lon, procuramos agora!
+                # Se o país for antigo e não tiver lat/lon, procuramos agora!
                 if not lat or not lon:
                     loc = geolocator.geocode(resultado['pais'])
                     lat = loc.latitude if loc else 0
@@ -234,12 +225,18 @@ def editar_pais(codigo):
         flash("Todos os campos são obrigatórios para a edição!", "danger")
         return redirect(url_for("paises"))
 
+    existente = tabela_paises.buscar(codigo)
+    lat = existente.get("lat") if existente else 0
+    lon = existente.get("lon") if existente else 0
+
     dados_atualizados = {
         "codigo": codigo,
         "pais": pais,
         "regiao": regiao,
         "operadora": operadora,
-        "tecnologia": tecnologia
+        "tecnologia": tecnologia,
+        "lat": lat,
+        "lon": lon
     }
 
     tabela_paises.inserir(codigo, dados_atualizados)

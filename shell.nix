@@ -5,6 +5,8 @@ pkgs.mkShell {
   buildInputs = [
     pkgs.python3
     pkgs.python3Packages.flask
+    pkgs.python3Packages.folium
+    pkgs.python3Packages.geopy
   ];
 
   shellHook = ''

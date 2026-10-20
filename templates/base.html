@@ -15,7 +15,7 @@
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <!-- Design System CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=2.1">
 </head>
 <body>
 
@@ -68,18 +68,13 @@
                 Instrumentação
               </a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link {% if request.endpoint == 'design_system' %}active{% endif %}" href="{{ url_for('design_system') }}">
-                Design System
-              </a>
-            </li>
           </ul>
 
-          <!-- Indicador de Status Operacional -->
+          <!-- Identificador do Projeto Acadêmico -->
           <div class="d-none d-lg-flex align-items-center gap-2">
-            <span class="d-inline-flex align-items-center gap-2 rounded-pill px-3 py-1 font-mono" style="background: rgba(0, 210, 255, 0.1); border: 1px solid rgba(0, 210, 255, 0.25); color: var(--cyan); font-size: 0.75rem; font-weight: 600;">
-              <span class="rounded-circle" style="width: 7px; height: 7px; background-color: var(--cyan); box-shadow: 0 0 6px var(--cyan);"></span>
-              Rede operacional
+            <span class="d-inline-flex align-items-center gap-2 rounded-pill px-3 py-1 font-mono" style="background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); color: #cbd5e1; font-size: 0.75rem;">
+              <span class="badge rounded-pill bg-primary" style="font-size: 0.65rem; padding: 0.25em 0.6em;">ED2</span>
+              <span>Etapa 1 &bull; Tabela Hash</span>
             </span>
           </div>
         </div>
@@ -133,8 +128,9 @@
           <span class="text-secondary small">&bull; UNEB &bull; Estruturas de Dados II</span>
         </div>
         
-        <div class="small text-secondary font-mono">
-          Arthur Felipe &bull; Lucas Vinicius &bull; Raphael Lopes
+        <div class="small text-secondary font-mono text-center text-md-start">
+          <div>Arthur Felipe &bull; Lucas Vinicius &bull; Raphael Lopes</div>
+          <div style="font-size: 0.75rem; color: #64748b;">Docente: Profa. Maria Inés Restovic</div>
         </div>
 
         <div>

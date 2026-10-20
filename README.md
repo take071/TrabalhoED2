@@ -31,7 +31,10 @@ O principal objetivo do trabalho é aplicar, analisar e integrar as estruturas d
 
 A persistência dos dados é realizada em arquivos JSON, carregados nas estruturas em memória durante a inicialização da aplicação, mantendo a lógica das estruturas de dados estritamente separada das rotas e controladores do Flask.
 
-> 📋 **Acompanhamento da Etapa 1:** Consulte o [Roadmap & Checklist da Etapa 1](ETAPA_1_TODOS.md) para acompanhar o progresso detalhado, arquitetura e critérios de aceite das entregas.
+> 📋 **Acompanhamento das Etapas:** Consulte os roadmaps detalhados na pasta [`etapas/`](etapas/):
+> - [Roadmap & Checklist da Etapa 1 (Tabela Hash)](etapas/ETAPA_1_TODOS.md)
+> - [Roadmap & Checklist da Etapa 2 (Árvore B)](etapas/ETAPA_2_TODOS.md)
+> - [Roadmap & Checklist da Etapa 3 (Grafos & Recomendador)](etapas/ETAPA_3_TODOS.md)
 
 ---
 
@@ -51,37 +54,57 @@ O sistema receberá o roteiro do usuário (países de destino, quantidade de dia
 
 ---
 
-## 3. Estrutura de Diretórios (Etapa 1)
+## 3. Estrutura de Diretórios do Projeto
 
-O projeto é construído de forma incremental. Nesta primeira etapa, a estrutura foca na **Tabela Hash** e nos arquivos de países, mantendo os diretórios preparados para os próximos módulos:
+O projeto é construído de forma modular e incremental, organizando código-fonte, dados, testes, documentação e materiais acadêmicos:
 
 ```text
 Trabalho-ED2/
-├── app.py                     # Aplicação Flask e rotas da Etapa 1
-├── shell.nix                  # (Opcional) Configuração de ambiente para Nix/NixOS
-├── requirements.txt           # Dependências do projeto (Flask)
-├── README.md                  # Documentação e relatório do projeto
+├── app.py                     # Aplicação Web Flask principal e rotas
+├── requirements.txt           # Dependências Python (Flask, Folium, Geopy)
+├── shell.nix                  # Configuração de ambiente reprodutível (Nix/NixOS)
+├── README.md                  # Documentação e relatório principal do projeto
+├── .gitignore                 # Arquivos ignorados pelo controle de versão
 │
-├── estruturas/                # Implementação das estruturas de dados
+├── estruturas/                # Núcleo das Estruturas de Dados (ED2)
 │   ├── __init__.py
-│   └── tabela_hash.py         # [Etapa 1] Tabela Hash própria com instrumentação
+│   ├── tabela_hash.py         # [Etapa 1] Tabela Hash própria com encadeamento separado
+│   └── arvore_b.py            # [Etapa 2] Esqueleto da Árvore B para clientes e eSIMs
 │
 ├── arquivos/                  # Persistência em disco (JSON)
-│   └── paises.json            # [Etapa 1] Base de dados dos países atendidos
+│   └── paises.json            # [Etapa 1] Base de dados dos países atendidos e coordenadas
 │
-├── templates/                 # Templates Jinja2 (a serem desenvolvidos na Etapa 1)
-│   └── .gitkeep
+├── templates/                 # Camada de apresentação (Jinja2 + Bootstrap 5)
+│   ├── base.html              # Layout base com navegação e rodapé acadêmico
+│   ├── index.html             # Dashboard principal com mapa dinâmico Folium
+│   ├── cobertura.html         # Consulta em tempo O(1) com mapa do destino
+│   ├── paises.html            # Gestão gerencial (CRUD) de destinos
+│   └── instrumentacao.html    # Inspeção visual dos 17 buckets e simulação didática
 │
-└── static/                    # Arquivos estáticos (CSS, JS, Imagens)
-    ├── css/
-    │   └── .gitkeep
-    ├── img/
-    │   └── logo.png           # Logotipo da GlobalSIM
-    └── js/
-        └── .gitkeep
+├── static/                    # Arquivos estáticos servidos pelo Flask
+│   ├── css/
+│   │   └── style.css          # Design system e folhas de estilo customizadas
+│   ├── js/                    # Scripts adicionais do frontend
+│   └── img/
+│       ├── logo.png           # Logotipo institucional da GlobalSIM
+│       └── globe-routes.png   # Elementos gráficos da aplicação
+│
+├── etapas/                    # Roadmaps e backlogs de acompanhamento de cada etapa
+│   ├── ETAPA_1_TODOS.md       # Checklist e documentação completa da Etapa 1
+│   ├── ETAPA_2_TODOS.md       # Especificação e backlog da Etapa 2 (Árvore B)
+│   └── ETAPA_3_TODOS.md       # Especificação e backlog da Etapa 3 (Grafos)
+│
+├── tests/                     # Testes unitários automatizados (unittest)
+│   ├── __init__.py
+│   └── test_tabela_hash.py    # Testes de inserção, busca, colisão, remoção e métricas
+│
+├── docs/                      # Materiais acadêmicos e referências da disciplina
+│   ├── AULAS-ED-2.pdf         # Slides e notas de aula de Estruturas de Dados II
+│   └── TrabalhoPratico-2026.2.pdf # Especificação formal do trabalho prático
+│
+└── scripts/                   # Scripts utilitários e testes manuais
+    └── gerar_mapa_demo.py     # Script auxiliar de geração e teste do mapa Folium
 ```
-
-*Nota: Os módulos das etapas seguintes (`arvore_b.py`, `clientes.json`, `pacotes.json`, `grafo.py`, `rede.json` e o `recomendador.py`) serão adicionados e integrados incrementalmente nas Etapas 2 e 3.*
 
 ---
 
@@ -89,15 +112,32 @@ Trabalho-ED2/
 
 ### Pré-requisitos
 - Python 3.10 ou superior
-- Gerenciador de pacotes `pip`
+- Gerenciador de pacotes `pip` (ou Nix/NixOS)
 
-### 1. Clonar o repositório
+---
+
+### Opção A: Execução no Nix / NixOS (Recomendado)
+
+O repositório já inclui o arquivo `shell.nix` configurado com Python 3 e todas as dependências (`flask`, `folium`, `geopy`):
+
 ```bash
-git clone https://github.com/take071/TrabalhoED2.git
-cd TrabalhoED2
+# Entrar no ambiente com as dependências carregadas:
+nix-shell
+
+# Executar a aplicação:
+python3 app.py
 ```
 
-### 2. Criar e ativar o ambiente virtual (venv)
+Ou diretamente em um único comando:
+```bash
+nix-shell --run "python3 app.py"
+```
+
+---
+
+### Opção B: Execução com Ambiente Virtual Padrão (`venv`)
+
+#### 1. Criar e ativar o ambiente virtual
 
 **No Linux / macOS:**
 ```bash
@@ -111,18 +151,30 @@ python -m venv venv
 .\venv\Scripts\Activate.ps1
 ```
 
-*(No Prompt de Comando / CMD tradicional: `venv\Scripts\activate.bat`)*
+*(No Prompt de Comando tradicional: `venv\Scripts\activate.bat`)*
 
-### 3. Instalar as dependências
+#### 2. Instalar as dependências
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Executar a aplicação
+#### 3. Executar a aplicação
 ```bash
 python3 app.py   # ou python app.py no Windows
 ```
 
 A aplicação ficará disponível em: **`http://localhost:5000`**
 
-> 💡 **Nota (Nix / NixOS):** Para desenvolvedores que utilizam NixOS, o repositório também inclui suporte opcional via `nix-shell`. Basta rodar `nix-shell` e em seguida `python3 app.py`.
+---
+
+## 5. Testes Unitários Automatizados
+
+Para executar a suíte de testes unitários da Tabela Hash (verificação de colisões, inserção, remoção e religamento de ponteiros):
+
+```bash
+# Via Python padrão / venv:
+python3 -m unittest discover tests
+
+# Ou via NixOS:
+nix-shell --run "python3 -m unittest discover tests"
+```
