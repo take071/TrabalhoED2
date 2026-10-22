@@ -178,3 +178,16 @@ python3 -m unittest discover tests
 # Ou via NixOS:
 nix-shell --run "python3 -m unittest discover tests"
 ```
+
+## 5. Testes Unitários Automatizados
+
+Para executar a suíte de testes unitários da Tabela Hash (verificação de colisões, inserção, remoção e religamento de ponteiros):
+
+```bash
+# Via Python padrão / venv:
+python3 -m unittest discover tests
+
+# Ou via NixOS:
+nix-shell --run "python3 -m unittest discover tests"
+```
+

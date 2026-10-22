@@ -13,3 +13,4 @@
 - [ ] Implementação de algoritmos de busca e roteamento: BFS, DFS e Dijkstra (menor latência/custo).
 - [ ] Implementação do algoritmo **Diferencial da Equipe**: Recomendador inteligente de pacotes por itinerário de viagem.
 - [ ] Integração final das três estruturas: Tabela Hash + Árvore B + Grafos.
+
