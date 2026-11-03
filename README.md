@@ -37,17 +37,19 @@ A persistência dos dados é realizada em arquivos JSON, carregados nas estrutur
 
 ## 2. Diferencial da Equipe
 
-**Tema:** Recomendação de pacote de dados a partir do roteiro de viagem.
+**Tema:** Sistema de Cache LRU (Least Recently Used) Customizado para Consultas de Rotas.
 
 ### Problema abordado
-Viajantes que realizam viagens com múltiplos destinos frequentemente têm dificuldade para escolher o plano de dados mais econômico e adequado. Contratar pacotes individuais para cada país encarece a viagem, enquanto pacotes globais podem ser desnecessários quando o itinerário abrange apenas uma região específica.
+Em redes de telecomunicações, o cálculo de rotas de menor latência exige alto processamento computacional, especialmente ao realizar travessias complexas. Quando múltiplos clientes acessam destinos populares repetidas vezes (ex: do Brasil para a Itália), o sistema aciona recálculos redundantes do menor caminho. A ausência de um mecanismo de memória temporária aumenta o tempo de resposta da aplicação Web e desperdiça recursos de processamento ao resolver o mesmo problema diversas vezes.
 
 ### Como o diferencial se integra às estruturas do projeto
-O sistema receberá o roteiro do usuário (países de destino, quantidade de dias e perfil de consumo) e utilizará as três estruturas implementadas:
+O sistema interceptará as consultas de conectividade solicitadas pelos clientes e atuará como uma camada de otimização em memória, integrando-se diretamente às três estruturas principais do projeto:
 
-1. **Tabela Hash:** Faz a verificação direta em tempo O(1) de cada país informado, checando se a GlobalSIM possui cobertura no destino, qual operadora e tecnologia estão disponíveis (4G/5G) e a qual região geográfica o país pertence.
-2. **Grafo da Rede:** Analisa a rota da viagem, calculando a sequência de conexões e a latência estimada entre os pontos do itinerário.
-3. **Árvore B e Catálogo de Pacotes:** Cruza as regiões dos países do roteiro, a duração total da viagem e o consumo previsto com os pacotes cadastrados. O algoritmo determina se pacotes regionais atendem à viagem ou se um pacote Global é a opção mais vantajosa, apresentando a melhor relação custo-benefício para o cliente.
+1. **Tabela Hash:** Além de a Tabela Hash gerenciar os dados dos países atendidos, sua mecânica de chave-valor inspira a estrutura interna do próprio Cache LRU (aliada a uma Fila Duplamente Encadeada para garantir buscas em tempo $O(1)$). Ademais, as funções de alteração e remoção de países na Tabela Hash principal do sistema atuarão como gatilhos: se a infraestrutura for alterada, o cache é invalidado para garantir que os clientes não recebam rotas desatualizadas.
+
+2. **Grafo da Rede:** Atua como a fonte da verdade (*fallback*). O algoritmo de Dijkstra, projetado para calcular a soma mínima das latências nas arestas, só será executado em caso de *Cache Miss* (quando a rota solicitada ainda não foi pesquisada ou expirou). Após o Grafo calcular a rota de menor latência, o resultado é imediatamente gravado no Cache LRU para que as próximas consultas idênticas sejam respondidas sem necessidade de nova travessia nos vértices.
+
+3. **Árvore B e Consulta Integrada:** Durante a Consulta Final Integrada exigida no projeto, o sistema busca o registro e o ID do cliente na Árvore B e verifica seu pacote. Na etapa de montar a resposta, em vez de onerar o servidor, o sistema devolve o caminho salvo instantaneamente a partir do cache, acelerando o retorno do painel para o cliente e demonstrando como uma quarta estrutura (Cache) suporta e agiliza a comunicação entre as Árvores e os Grafos.
 
 ---
 
