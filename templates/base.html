@@ -15,7 +15,7 @@
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <!-- Design System CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=2.1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=2.2">
 </head>
 <body>
 
@@ -64,9 +64,23 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link {% if request.endpoint == 'instrumentacao' %}active{% endif %}" href="{{ url_for('instrumentacao') }}">
+              <a class="nav-link {% if request.endpoint == 'clientes' %}active{% endif %}" href="{{ url_for('clientes') }}">
+                Clientes
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'consulta' %}active{% endif %}" href="{{ url_for('consulta') }}">
+                Consulta
+              </a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle {% if request.endpoint in ('instrumentacao', 'arvore_b') %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Instrumentação
               </a>
+              <ul class="dropdown-menu dropdown-menu-dark border-0 shadow-lg" style="background: var(--navy-800);">
+                <li><a class="dropdown-item {% if request.endpoint == 'instrumentacao' %}active{% endif %}" href="{{ url_for('instrumentacao') }}">Tabela Hash (Países)</a></li>
+                <li><a class="dropdown-item {% if request.endpoint == 'arvore_b' %}active{% endif %}" href="{{ url_for('arvore_b') }}">Árvore B (Clientes)</a></li>
+              </ul>
             </li>
           </ul>
 
@@ -74,7 +88,7 @@
           <div class="d-none d-lg-flex align-items-center gap-2">
             <span class="d-inline-flex align-items-center gap-2 rounded-pill px-3 py-1 font-mono" style="background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); color: #cbd5e1; font-size: 0.75rem;">
               <span class="badge rounded-pill bg-primary" style="font-size: 0.65rem; padding: 0.25em 0.6em;">ED2</span>
-              <span>Etapa 1 &bull; Tabela Hash</span>
+              <span>Etapa 2 &bull; Hash &amp; Árvore B</span>
             </span>
           </div>
         </div>
@@ -135,7 +149,7 @@
 
         <div>
           <span class="badge" style="background: rgba(255,255,255,0.06); color: #94a3b8; font-family: var(--font-mono); font-size: 0.7rem;">
-            Tabela Hash &bull; O(1)
+            Tabela Hash O(1) &bull; Árvore B O(log n)
           </span>
         </div>
       </div>

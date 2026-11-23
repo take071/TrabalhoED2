@@ -9,10 +9,19 @@
     "lon": -106.3468
   },
   {
+    "codigo": "IT",
+    "pais": "Itália",
+    "regiao": "Europa",
+    "operadora": "TIM / Vodafone IT",
+    "tecnologia": "5G",
+    "lat": 41.8719,
+    "lon": 12.5674
+  },
+  {
     "codigo": "DE",
     "pais": "Alemanha",
     "regiao": "Europa",
-    "operadora": "Operdadorassss",
+    "operadora": "Deutsche Telekom / Vodafone DE",
     "tecnologia": "5G",
     "lat": 51.1638175,
     "lon": 10.4478313
@@ -30,7 +39,7 @@
     "codigo": "AR",
     "pais": "Argentina",
     "regiao": "América",
-    "operadora": "Telekom",
+    "operadora": "Claro / Personal / Movistar",
     "tecnologia": "5G",
     "lat": -34.9964963,
     "lon": -64.9672817

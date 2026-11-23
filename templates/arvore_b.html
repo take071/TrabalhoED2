@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Instrumentação da Árvore B · GlobalSIM{% endblock %}
+
+{% block content %}
+<!-- Cabeçalho da Página em Deep Navy -->
+<section class="page-header-navy bg-grid-tech">
+  <div class="container">
+    <div style="max-width: 720px;">
+      <span class="eyebrow-badge mb-2">Instrumentação Acadêmica</span>
+      <h1 class="display-6 fw-bold text-white font-heading mb-1">Árvore B &bull; Índice de Clientes</h1>
+      <p class="mb-0 font-mono" style="color: #94a3b8; font-size: 0.9rem;">
+        t = {{ metricas.grau_minimo }} &bull; {{ metricas.min_chaves }} a {{ metricas.max_chaves }} chaves por nó &bull; até {{ metricas.ordem }} filhos &bull; Chave: ID do cliente
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+
+  <!-- Métricas fundamentais -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+      <div class="card card-gs p-3 h-100">
+        <div class="small fw-semibold text-muted" style="font-size: 0.75rem;">Chaves (N)</div>
+        <div class="font-mono fs-2 fw-bold my-1" style="color: var(--azure);">{{ metricas.tamanho }}</div>
+        <div class="small text-muted" style="font-size: 0.75rem;">Clientes indexados</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="card card-gs p-3 h-100">
+        <div class="small fw-semibold text-muted" style="font-size: 0.75rem;">Altura</div>
+        <div class="font-mono fs-2 fw-bold text-dark my-1">{{ metricas.altura }}</div>
+        <div class="small text-muted" style="font-size: 0.75rem;">níveis (limite teórico: {{ altura_maxima }})</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="card card-gs p-3 h-100">
+        <div class="small fw-semibold text-muted" style="font-size: 0.75rem;">Nós</div>
+        <div class="font-mono fs-2 fw-bold my-1" style="color: var(--success);">{{ metricas.total_nos }}</div>
+        <div class="small text-muted" style="font-size: 0.75rem;">{{ metricas.nos_internos }} internos &bull; {{ metricas.nos_folha }} folhas</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="card card-gs p-3 h-100">
+        <div class="small fw-semibold text-muted" style="font-size: 0.75rem;">Divisões de nó</div>
+        <div class="font-mono fs-2 fw-bold my-1" style="color: var(--gold);">{{ metricas.total_divisoes }}</div>
+        <div class="small text-muted" style="font-size: 0.75rem;">ocupação média {{ metricas.ocupacao }}%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- Coluna esquerda: árvore por níveis -->
+    <div class="col-xl-8">
+      <div class="card card-navy overflow-hidden shadow-elev-3">
+
+        <div class="p-3 px-4 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2" style="border-color: rgba(255, 255, 255, 0.08) !important;">
+          <div>
+            <h6 class="fw-bold font-heading text-white mb-0">Estrutura por níveis</h6>
+            <span class="small font-mono" style="font-size: 0.75rem; color: #94a3b8;">raiz no nível 0 &bull; todas as folhas no mesmo nível</span>
+          </div>
+          <div class="d-flex align-items-center gap-3 small font-mono" style="font-size: 0.75rem; color: #94a3b8;">
+            <span class="d-inline-flex align-items-center gap-1">
+              <span style="width: 10px; height: 10px; border-radius: 2px; background: rgba(37, 99, 235, 0.4); border: 1px solid var(--azure);"></span> Interno
+            </span>
+            <span class="d-inline-flex align-items-center gap-1">
+              <span style="width: 10px; height: 10px; border-radius: 2px; background: rgba(100, 116, 139, 0.4); border: 1px solid #64748b;"></span> Folha
+            </span>
+            <span class="d-inline-flex align-items-center gap-1">
+              <span style="width: 10px; height: 10px; border-radius: 2px; background: rgba(0, 210, 255, 0.3); border: 1px solid var(--cyan);"></span> Caminho da busca
+            </span>
+          </div>
+        </div>
+
+        {% for nivel in niveis %}
+          <div class="btree-level">
+            <div class="btree-level-label">
+              Nível {{ nivel.nivel }}
+              <small>{{ nivel.total_nos }} nó(s)<br>{{ nivel.total_chaves }} chaves</small>
+            </div>
+            <div class="btree-nodes">
+              {% for no in nivel.nos %}
+                <span class="btree-node {% if no.folha %}is-leaf{% endif %} {% if no.id in caminho %}in-path{% endif %}" title="Nó #{{ no.id }}">
+                  <span class="btree-node-id">#{{ no.id }}</span>
+                  {% for chave in no.chaves %}
+                    <span class="btree-key {% if busca and not busca.invalido and busca.id == chave %}is-target{% endif %}">{{ chave }}</span>
+                  {% endfor %}
+                </span>
+              {% endfor %}
+              {% if nivel.ocultos > 0 %}
+                <span class="btree-more">+ {{ nivel.ocultos }} nó(s) não exibidos</span>
+              {% endif %}
+            </div>
+          </div>
+        {% else %}
+          <div class="p-5 text-center text-muted">A árvore está vazia.</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Coluna direita -->
+    <div class="col-xl-4">
+
+      <!-- Busca com caminho -->
+      <div class="card card-gs p-4 mb-4 shadow-elev-1">
+        <h6 class="fw-bold font-heading text-dark mb-1">Acompanhar uma busca</h6>
+        <p class="text-muted small mb-3">Informe um ID para ver os nós visitados da raiz até o cliente.</p>
+
+        <form action="{{ url_for('arvore_b') }}" method="GET" class="input-group mb-3">
+          <input type="text" inputmode="numeric" name="id" class="form-control font-mono fw-bold shadow-none" placeholder="Ex: 58372" value="{{ busca.id if busca else '' }}">
+          <button class="btn btn-azure px-3" type="submit">Buscar</button>
+        </form>
+
+        {% if busca %}
+          {% if busca.invalido %}
+            <div class="small text-danger">Informe apenas números.</div>
+          {% else %}
+            {% set inst = busca.instrumentacao %}
+            <div class="p-3 rounded-3 font-mono small" style="background: var(--navy); color: #cbd5e1;">
+              <div class="text-white fw-bold mb-1">arvore.buscar({{ busca.id }})</div>
+              <div>
+                {% if inst.encontrada %}<span style="color: var(--cyan);">encontrado</span>{% else %}<span style="color: var(--gold);">não encontrado</span>{% endif %}
+                {% if busca.cliente %}&mdash; {{ busca.cliente.nome }}{% endif %}
+              </div>
+              <div class="mt-2">nós visitados: <span class="text-white">{{ inst.acessos }}</span></div>
+              <div>comparações: <span class="text-white">{{ inst.comparacoes }}</span></div>
+              <div class="mt-2" style="font-size: 0.75rem;">
+                {% for no in inst.caminho %}#{{ no }}{% if not loop.last %} &rarr; {% endif %}{% endfor %}
+              </div>
+              <div class="mt-2 pt-2 border-top border-secondary" style="font-size: 0.72rem; color: #94a3b8;">
+                Uma busca sequencial faria até {{ metricas.tamanho }} comparações.
+              </div>
+            </div>
+          {% endif %}
+        {% endif %}
+
+        <div class="small text-muted font-mono mt-3" style="font-size: 0.72rem;">
+          {{ metricas.total_buscas }} buscas desde a inicialização
+          {% if metricas.total_buscas %}&bull; média de {{ metricas.media_acessos }} nós e {{ metricas.media_comparacoes }} comparações{% endif %}
+        </div>
+      </div>
+
+      <!-- Integridade -->
+      <div class="card card-gs p-4 mb-4 shadow-elev-1">
+        <h6 class="fw-bold font-heading text-dark mb-2">Verificação das propriedades</h6>
+        <div class="d-flex align-items-start gap-2">
+          {% if valida %}
+            <i class="bi bi-check-circle-fill text-success"></i>
+            <div class="small text-muted">{{ mensagem_validacao }} Ocupação entre {{ metricas.min_chaves }} e {{ metricas.max_chaves }} chaves, folhas no mesmo nível e chaves em ordem.</div>
+          {% else %}
+            <i class="bi bi-x-octagon-fill text-danger"></i>
+            <div class="small text-danger">{{ mensagem_validacao }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Histórico de divisões -->
+      <div class="card card-gs p-4 mb-4 shadow-elev-1">
+        <h6 class="fw-bold font-heading text-dark mb-2">Últimas divisões de nó</h6>
+        {% if metricas.historico_divisoes %}
+          <div class="d-flex flex-column gap-2">
+            {% for d in metricas.historico_divisoes[:6] %}
+              <div class="small font-mono" style="font-size: 0.75rem;">
+                <span class="badge-collision">#{{ d.numero }}</span>
+                nó {{ d.no_dividido }} &rarr; {{ d.no_dividido }} + {{ d.novo_no }}
+                <span class="text-muted">&bull; sobe {{ d.chave_promovida }}{% if d.nova_raiz %} (nova raiz){% endif %}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="small text-muted">Nenhuma divisão ocorreu ainda.</div>
+        {% endif %}
+        {% if metricas.ultima_insercao %}
+          <div class="small text-muted font-mono mt-3 pt-3 border-top" style="font-size: 0.72rem; border-color: var(--border) !important;">
+            Última inserção (ID {{ metricas.ultima_insercao.chave }}): {{ metricas.ultima_insercao.acessos }} nós visitados,
+            {{ metricas.ultima_insercao.divisoes }} divisão(ões).
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Fundamentos -->
+      <div class="card card-gs p-4 shadow-elev-1">
+        <h6 class="fw-bold font-heading text-dark mb-2">Fundamentos</h6>
+        <p class="text-muted small mb-2">
+          <strong>Divisão preventiva:</strong> ao descer para inserir, todo nó cheio ({{ metricas.max_chaves }} chaves) é dividido em dois nós de {{ metricas.min_chaves }} chaves e a mediana sobe para o pai. Se a raiz divide, a árvore ganha um nível.
+        </p>
+        <div class="p-2 rounded bg-light font-mono small text-dark mb-3" style="font-size: 0.75rem;">
+          h &le; log<sub>t</sub>((N + 1) / 2)
+        </div>
+        <p class="text-muted small mb-0">
+          <strong>Persistência:</strong> os clientes são gravados em <code>clientes.json</code> na ordem de inserção e reinseridos na mesma ordem ao iniciar. Como a inserção é determinística, a árvore reconstruída é idêntica à anterior.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

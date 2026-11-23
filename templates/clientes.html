@@ -1,0 +1,446 @@
+{% extends "base.html" %}
+
+{% block title %}Clientes e eSIMs · GlobalSIM{% endblock %}
+
+{% block content %}
+<!-- Cabeçalho da Página em Deep Navy -->
+<section class="page-header-navy bg-grid-tech">
+  <div class="container">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+      <div>
+        <span class="eyebrow-badge mb-2">Etapa 2 &bull; Árvore B</span>
+        <h1 class="display-6 fw-bold text-white font-heading mb-1">Clientes e eSIMs</h1>
+        <p class="mb-0" style="color: #cbd5e1;">
+          {{ total_geral }} clientes indexados por ID em uma Árvore B de grau {{ metricas_arvore.grau_minimo }}
+          &mdash; {{ metricas_arvore.altura }} níveis, {{ metricas_arvore.total_nos }} nós.
+        </p>
+      </div>
+
+      <button type="button" class="btn btn-azure px-4 py-2 d-inline-flex align-items-center gap-2 text-nowrap" onclick="abrirCadastrar('')">
+        <i class="bi bi-person-plus"></i>
+        <span>Novo cliente</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+
+  <!-- Consulta por ID (diretamente na Árvore B) -->
+  <div class="card card-gs p-3 mb-4 shadow-elev-2">
+    <form action="{{ url_for('clientes') }}" method="GET">
+      <div class="d-flex flex-column flex-sm-row gap-2">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0 text-muted ps-3">
+            <i class="bi bi-search"></i>
+          </span>
+          <input
+            type="text"
+            inputmode="numeric"
+            class="form-control border-start-0 font-monospace fw-bold shadow-none py-2 text-dark"
+            id="campoBuscaId"
+            name="id"
+            placeholder="Buscar cliente por ID (ex: 58372)"
+            value="{{ busca.id if busca else '' }}"
+          >
+        </div>
+        <button class="btn btn-azure px-4 fw-semibold text-nowrap" type="submit">Buscar na Árvore B</button>
+      </div>
+    </form>
+    <div class="small text-muted mt-2 font-mono" style="font-size: 0.75rem;">
+      A busca desce a árvore a partir da raiz: no máximo {{ metricas_arvore.altura }} nós visitados, sem varrer a lista.
+    </div>
+  </div>
+
+  <!-- Resultado da busca por ID -->
+  {% if busca %}
+    {% if busca.invalido %}
+      <div class="card card-gs p-4 border-0 shadow-sm mb-4" style="border-left: 4px solid var(--gold) !important;">
+        <div class="fw-bold font-heading text-dark">ID inválido</div>
+        <div class="small text-muted">Informe apenas números, por exemplo 58372.</div>
+      </div>
+
+    {% elif busca.cliente %}
+      {% set c = busca.cliente %}
+      {% set inst = busca.instrumentacao %}
+      <div class="card card-gs overflow-hidden shadow-elev-3 mb-4">
+        <div class="p-4 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 border-bottom" style="border-color: var(--border) !important;">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <h3 class="fw-bold font-heading mb-0 text-dark">{{ c.nome }}</h3>
+              <span class="badge-code">{{ c.id }}</span>
+            </div>
+            <div class="small text-muted">{{ c.email }}</div>
+          </div>
+          <span class="badge-status st-{{ c.status }}">{{ c.status }}</span>
+        </div>
+
+        <div class="row g-0 bg-light">
+          <div class="col-md-4 p-4 border-end bg-white" style="border-color: var(--border) !important;">
+            <div class="small fw-semibold text-muted mb-2" style="font-size: 0.75rem;"><i class="bi bi-sim me-1"></i> eSIM</div>
+            {% if c.esim %}
+              <div class="fw-bold text-dark font-mono">{{ c.esim }}</div>
+            {% else %}
+              <div class="text-muted">Ainda não associado</div>
+            {% endif %}
+          </div>
+          <div class="col-md-4 p-4 border-end bg-white" style="border-color: var(--border) !important;">
+            <div class="small fw-semibold text-muted mb-2" style="font-size: 0.75rem;"><i class="bi bi-box-seam me-1"></i> Pacote</div>
+            {% if c.pacote %}
+              <div class="fw-bold text-dark">{{ nomes_pacotes.get(c.pacote, 'Pacote ' ~ c.pacote) }}</div>
+              <div class="small text-muted font-mono">código {{ c.pacote }}</div>
+            {% else %}
+              <div class="text-muted">Nenhum pacote associado</div>
+            {% endif %}
+          </div>
+          <div class="col-md-4 p-4 bg-white">
+            <div class="small fw-semibold text-muted mb-2" style="font-size: 0.75rem;"><i class="bi bi-diagram-3 me-1"></i> Busca na Árvore B</div>
+            <div class="font-mono small text-dark fw-bold">arvore.buscar({{ c.id }})</div>
+            <div class="small text-primary font-mono mt-1">
+              {{ inst.acessos }} nó(s) visitado(s) &bull; {{ inst.comparacoes }} comparações
+            </div>
+            <div class="small text-muted font-mono mt-1" style="font-size: 0.72rem;">
+              {% for no in inst.caminho %}#{{ no }}{% if not loop.last %} &rarr; {% endif %}{% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3 px-4 d-flex flex-wrap gap-2 border-top" style="border-color: var(--border) !important;">
+          <button type="button" class="btn btn-sm btn-outline-custom"
+                  data-id="{{ c.id }}" data-nome="{{ c.nome }}" data-email="{{ c.email }}" data-status="{{ c.status }}"
+                  onclick="abrirEditar(this)">
+            <i class="bi bi-pencil me-1"></i> Editar dados
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-custom"
+                  data-id="{{ c.id }}" data-nome="{{ c.nome }}" data-esim="{{ c.esim or '' }}" data-pacote="{{ c.pacote or '' }}"
+                  onclick="abrirAssociar(this)">
+            <i class="bi bi-sim me-1"></i> Associar eSIM e pacote
+          </button>
+          <a class="btn btn-sm btn-azure" href="{{ url_for('consulta', cliente=c.id) }}">
+            <i class="bi bi-globe-americas me-1"></i> Consultar destino
+          </a>
+          <a class="btn btn-sm btn-outline-custom ms-sm-auto" href="{{ url_for('arvore_b', id=c.id) }}">
+            Ver caminho na árvore
+          </a>
+        </div>
+      </div>
+
+    {% else %}
+      <div class="card card-gs p-4 border-0 shadow-sm mb-4" style="border-left: 4px solid #ef4444 !important;">
+        <div class="d-flex align-items-start gap-3">
+          <span class="p-2 rounded-3 text-danger" style="background: rgba(239, 68, 68, 0.1);">
+            <i class="bi bi-person-x fs-4"></i>
+          </span>
+          <div>
+            <h5 class="fw-bold font-heading text-dark mb-1">Nenhum cliente com o ID {{ busca.id }}</h5>
+            <p class="text-muted small mb-3">
+              A busca percorreu {{ busca.instrumentacao.acessos }} nó(s) da Árvore B
+              ({{ busca.instrumentacao.comparacoes }} comparações) e chegou a uma folha sem encontrar a chave.
+            </p>
+            <button type="button" class="btn btn-sm btn-azure px-3" onclick="abrirCadastrar('{{ busca.id }}')">
+              <i class="bi bi-person-plus me-1"></i> Cadastrar cliente com o ID {{ busca.id }}
+            </button>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+
+  <!-- Listagem de clientes (percurso em ordem da Árvore B) -->
+  <div class="card card-gs overflow-hidden shadow-elev-2">
+
+    <div class="p-4 border-bottom d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3" style="border-color: var(--border) !important;">
+      <div>
+        <h5 class="fw-bold font-heading text-dark mb-1">Clientes cadastrados</h5>
+        <div class="small text-muted font-mono">
+          {{ total_filtrado }}{% if total_filtrado != total_geral %} de {{ total_geral }}{% endif %} registros &bull; ordenados por ID
+          {% if q %}
+            {% set rotulos_campo = {'id': 'ID', 'nome': 'Nome', 'email': 'E-mail', 'esim': 'eSIM'} %}
+            &bull; <span>filtro por {{ rotulos_campo.get(campo_filtro, campo_filtro) }} (percurso em ordem)</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <form action="{{ url_for('clientes') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2 w-100 w-lg-auto">
+        <select name="campo" id="campoFiltro" class="form-select form-select-sm shadow-none" style="max-width: 125px;" aria-label="Filtrar por campo" onchange="atualizarPlaceholderFiltro()">
+          <option value="id" {% if campo_filtro == 'id' %}selected{% endif %}>ID</option>
+          <option value="nome" {% if campo_filtro == 'nome' %}selected{% endif %}>Nome</option>
+          <option value="email" {% if campo_filtro == 'email' %}selected{% endif %}>E-mail</option>
+          <option value="esim" {% if campo_filtro == 'esim' %}selected{% endif %}>eSIM</option>
+        </select>
+        <div class="input-group input-group-sm" style="max-width: 240px;">
+          <span class="input-group-text bg-white border-end-0 text-muted ps-2"><i class="bi bi-filter"></i></span>
+          <input type="text" id="valorFiltro" name="q" value="{{ q }}" class="form-control border-start-0 small shadow-none" placeholder="Contém no ID (ex: 9, 583)">
+        </div>
+        <select name="status" class="form-select form-select-sm shadow-none" style="max-width: 145px;" aria-label="Filtrar por status">
+          <option value="">Todos os status</option>
+          {% for s in status_validos %}
+            <option value="{{ s }}" {% if s == status_filtro %}selected{% endif %}>{{ s|capitalize }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-sm btn-outline-custom">Filtrar</button>
+        {% if q or status_filtro %}
+          <a href="{{ url_for('clientes') }}" class="btn btn-sm btn-link text-muted">Limpar</a>
+        {% endif %}
+      </form>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table-minimal">
+        <thead>
+          <tr>
+            <th style="width: 10%;">ID</th>
+            <th style="width: 30%;">Cliente</th>
+            <th style="width: 15%;">eSIM</th>
+            <th style="width: 18%;">Pacote</th>
+            <th style="width: 12%;">Status</th>
+            <th style="width: 15%; text-align: right;">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in clientes %}
+            <tr>
+              <td><span class="badge-code">{{ c.id }}</span></td>
+              <td>
+                <div class="fw-bold text-dark font-heading">{{ c.nome }}</div>
+                <div class="text-muted" style="font-size: 0.75rem;">{{ c.email }}</div>
+              </td>
+              <td class="font-mono small">{{ c.esim or '—' }}</td>
+              <td class="small">
+                {% if c.pacote %}
+                  {{ nomes_pacotes.get(c.pacote, 'Pacote ' ~ c.pacote) }}
+                  <span class="text-muted font-mono" style="font-size: 0.72rem;">({{ c.pacote }})</span>
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+              <td><span class="badge-status st-{{ c.status }}">{{ c.status }}</span></td>
+              <td style="text-align: right;">
+                <div class="d-inline-flex gap-1">
+                  <a class="btn btn-sm btn-light border-0 text-muted p-1 px-2 rounded-2" title="Buscar na Árvore B" href="{{ url_for('clientes', id=c.id) }}">
+                    <i class="bi bi-search"></i>
+                  </a>
+                  <button type="button" class="btn btn-sm btn-light border-0 text-muted p-1 px-2 rounded-2" title="Editar dados"
+                          data-id="{{ c.id }}" data-nome="{{ c.nome }}" data-email="{{ c.email }}" data-status="{{ c.status }}"
+                          onclick="abrirEditar(this)">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button type="button" class="btn btn-sm btn-light border-0 text-muted p-1 px-2 rounded-2" title="Associar eSIM e pacote"
+                          data-id="{{ c.id }}" data-nome="{{ c.nome }}" data-esim="{{ c.esim or '' }}" data-pacote="{{ c.pacote or '' }}"
+                          onclick="abrirAssociar(this)">
+                    <i class="bi bi-sim"></i>
+                  </button>
+                  <a class="btn btn-sm btn-light border-0 text-primary p-1 px-2 rounded-2" title="Consultar destino" href="{{ url_for('consulta', cliente=c.id) }}">
+                    <i class="bi bi-globe-americas"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-center py-5 text-muted">
+                Nenhum cliente encontrado com esses filtros.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginação -->
+    {% if total_paginas > 1 %}
+      <div class="p-3 px-4 border-top d-flex flex-wrap align-items-center justify-content-between gap-2" style="border-color: var(--border) !important;">
+        <div class="small text-muted font-mono">Página {{ pagina }} de {{ total_paginas }}</div>
+        <nav aria-label="Paginação de clientes">
+          <ul class="pagination pagination-sm mb-0">
+            <li class="page-item {% if pagina == 1 %}disabled{% endif %}">
+              <a class="page-link" href="{{ url_for('clientes', pagina=pagina - 1, campo=campo_filtro if q else None, q=q or None, status=status_filtro or None) }}">Anterior</a>
+            </li>
+            {% for p in range(1, total_paginas + 1) %}
+              {% if p == 1 or p == total_paginas or (p - pagina)|abs <= 2 %}
+                <li class="page-item {% if p == pagina %}active{% endif %}">
+                  <a class="page-link" href="{{ url_for('clientes', pagina=p, campo=campo_filtro if q else None, q=q or None, status=status_filtro or None) }}">{{ p }}</a>
+                </li>
+              {% elif (p - pagina)|abs == 3 %}
+                <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+              {% endif %}
+            {% endfor %}
+            <li class="page-item {% if pagina == total_paginas %}disabled{% endif %}">
+              <a class="page-link" href="{{ url_for('clientes', pagina=pagina + 1, campo=campo_filtro if q else None, q=q or None, status=status_filtro or None) }}">Próxima</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Modal: Cadastrar Cliente -->
+<div class="modal fade" id="modalCadastrar" tabindex="-1" aria-labelledby="modalCadastrarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content card-gs border-0 shadow-elev-3 overflow-hidden">
+      <form action="{{ url_for('cadastrar_cliente') }}" method="POST">
+        <div class="modal-header bg-navy text-white py-3">
+          <h5 class="modal-title font-heading fw-bold fs-6" id="modalCadastrarLabel">
+            <i class="bi bi-person-plus me-2 text-cyan"></i>Cadastrar Cliente
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label for="cadNome" class="form-label small fw-bold text-muted">Nome *</label>
+            <input type="text" class="form-control shadow-none" id="cadNome" name="nome" placeholder="Ex: Maria Silva" required>
+          </div>
+          <div class="mb-3">
+            <label for="cadEmail" class="form-label small fw-bold text-muted">E-mail *</label>
+            <input type="email" class="form-control shadow-none" id="cadEmail" name="email" placeholder="maria@email.com" required>
+          </div>
+          <div class="mb-3">
+            <label for="cadId" class="form-label small fw-bold text-muted">ID (chave da Árvore B)</label>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" class="form-control font-mono shadow-none" id="cadId" name="id" placeholder="Em branco para gerar automaticamente">
+            <div class="form-text">O ID é único: se já existir, o cadastro é recusado.</div>
+          </div>
+          <div class="mb-1">
+            <label for="cadPacote" class="form-label small fw-bold text-muted">Pacote</label>
+            <select class="form-select shadow-none" id="cadPacote" name="pacote">
+              <option value="">Sem pacote (cliente fica pendente)</option>
+              {% for p in pacotes %}
+                <option value="{{ p.codigo }}">{{ p.nome }} &mdash; {{ p.dados_gb }} GB / {{ p.validade_dias }} dias</option>
+              {% endfor %}
+            </select>
+            <div class="form-text">Com pacote, um eSIM é gerado e o cliente já nasce ativo.</div>
+          </div>
+        </div>
+        <div class="modal-footer bg-light p-3 border-top" style="border-color: var(--border) !important;">
+          <button type="button" class="btn btn-sm btn-outline-custom" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-sm btn-azure px-3">Cadastrar cliente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Editar Cliente -->
+<div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content card-gs border-0 shadow-elev-3 overflow-hidden">
+      <form id="formEditar" method="POST">
+        <div class="modal-header bg-navy text-white py-3">
+          <h5 class="modal-title font-heading fw-bold fs-6" id="modalEditarLabel">
+            <i class="bi bi-pencil-square me-2 text-cyan"></i>Editar Cliente <span id="spanIdEditar" class="badge-code ms-1"></span>
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label for="editNome" class="form-label small fw-bold text-muted">Nome *</label>
+            <input type="text" class="form-control shadow-none" id="editNome" name="nome" required>
+          </div>
+          <div class="mb-3">
+            <label for="editEmail" class="form-label small fw-bold text-muted">E-mail *</label>
+            <input type="email" class="form-control shadow-none" id="editEmail" name="email" required>
+          </div>
+          <div class="mb-1">
+            <label for="editStatus" class="form-label small fw-bold text-muted">Status *</label>
+            <select class="form-select shadow-none" id="editStatus" name="status" required>
+              {% for s in status_validos %}
+                <option value="{{ s }}">{{ s|capitalize }}</option>
+              {% endfor %}
+            </select>
+            <div class="form-text">Para ativar, o cliente precisa ter eSIM e pacote associados.</div>
+          </div>
+        </div>
+        <div class="modal-footer bg-light p-3 border-top" style="border-color: var(--border) !important;">
+          <button type="button" class="btn btn-sm btn-outline-custom" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-sm btn-azure px-3">Salvar alterações</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Associar eSIM e Pacote -->
+<div class="modal fade" id="modalAssociar" tabindex="-1" aria-labelledby="modalAssociarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content card-gs border-0 shadow-elev-3 overflow-hidden">
+      <form id="formAssociar" method="POST">
+        <div class="modal-header bg-navy text-white py-3">
+          <h5 class="modal-title font-heading fw-bold fs-6" id="modalAssociarLabel">
+            <i class="bi bi-sim me-2 text-cyan"></i>Associar eSIM e Pacote <span id="spanIdAssociar" class="badge-code ms-1"></span>
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body p-4">
+          <p class="small text-muted mb-3">Cliente: <strong id="nomeAssociar" class="text-dark"></strong></p>
+          <div class="mb-3">
+            <label for="assocPacote" class="form-label small fw-bold text-muted">Pacote *</label>
+            <select class="form-select shadow-none" id="assocPacote" name="pacote" required>
+              <option value="" disabled>Selecione...</option>
+              {% for p in pacotes %}
+                <option value="{{ p.codigo }}">{{ p.nome }} &mdash; {{ p.dados_gb }} GB / {{ p.validade_dias }} dias</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-1">
+            <label for="assocEsim" class="form-label small fw-bold text-muted">eSIM</label>
+            <input type="text" class="form-control font-mono text-uppercase shadow-none" id="assocEsim" name="esim" placeholder="Em branco: manter o atual ou gerar novo">
+            <div class="form-text">Formato ESIM-12345. Cada eSIM só pode pertencer a um cliente.</div>
+          </div>
+        </div>
+        <div class="modal-footer bg-light p-3 border-top" style="border-color: var(--border) !important;">
+          <button type="button" class="btn btn-sm btn-outline-custom" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-sm btn-azure px-3">Associar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function mostrarModal(id) {
+    bootstrap.Modal.getOrCreateInstance(document.getElementById(id)).show();
+  }
+
+  function abrirCadastrar(id) {
+    document.getElementById('cadId').value = id || '';
+    mostrarModal('modalCadastrar');
+  }
+
+  function abrirEditar(btn) {
+    const d = btn.dataset;
+    document.getElementById('formEditar').action = `/clientes/${encodeURIComponent(d.id)}/editar`;
+    document.getElementById('spanIdEditar').innerText = d.id;
+    document.getElementById('editNome').value = d.nome;
+    document.getElementById('editEmail').value = d.email;
+    document.getElementById('editStatus').value = d.status;
+    mostrarModal('modalEditar');
+  }
+
+  function abrirAssociar(btn) {
+    const d = btn.dataset;
+    document.getElementById('formAssociar').action = `/clientes/${encodeURIComponent(d.id)}/associar`;
+    document.getElementById('spanIdAssociar').innerText = d.id;
+    document.getElementById('nomeAssociar').innerText = d.nome;
+    document.getElementById('assocPacote').value = d.pacote || '';
+    document.getElementById('assocEsim').value = d.esim || '';
+    mostrarModal('modalAssociar');
+  }
+
+  function atualizarPlaceholderFiltro() {
+    const campo = document.getElementById('campoFiltro').value;
+    const input = document.getElementById('valorFiltro');
+    const placeholders = {
+      id: 'Contém no ID (ex: 9, 583)',
+      nome: 'Filtrar por nome...',
+      email: 'Filtrar por e-mail...',
+      esim: 'Filtrar por eSIM (ex: ESIM-83921)',
+    };
+    input.placeholder = placeholders[campo] || 'Digite o termo...';
+    input.inputMode = campo === 'id' ? 'numeric' : 'text';
+  }
+
+  atualizarPlaceholderFiltro();
+</script>
+{% endblock %}

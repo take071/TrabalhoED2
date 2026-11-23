@@ -371,3 +371,184 @@ code, pre, .font-mono {
   color: #94a3b8;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
+
+/* ==========================================================================
+   Etapa 2 — Clientes e Árvore B
+   ========================================================================== */
+
+/* Badges de status do cliente */
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  text-transform: capitalize;
+}
+
+.badge-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.badge-status.st-ativo {
+  background-color: rgba(5, 150, 105, 0.1);
+  color: var(--success);
+  border-color: rgba(5, 150, 105, 0.25);
+}
+
+.badge-status.st-inativo {
+  background-color: rgba(100, 116, 139, 0.1);
+  color: #475569;
+  border-color: rgba(100, 116, 139, 0.25);
+}
+
+.badge-status.st-suspenso {
+  background-color: rgba(245, 158, 11, 0.12);
+  color: var(--gold-600);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.badge-status.st-pendente {
+  background-color: rgba(37, 99, 235, 0.08);
+  color: var(--azure);
+  border-color: rgba(37, 99, 235, 0.25);
+}
+
+/* Visualizador da Árvore B (painel escuro, mesmo padrão dos buckets da Hash) */
+.btree-level {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.btree-level:last-child {
+  border-bottom: none;
+}
+
+.btree-level-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+  width: 92px;
+  flex-shrink: 0;
+  padding-top: 0.35rem;
+}
+
+.btree-level-label small {
+  display: block;
+  font-weight: 400;
+  color: #64748b;
+  font-size: 0.68rem;
+}
+
+.btree-nodes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.btree-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 8px;
+  background-color: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(37, 99, 235, 0.4);
+}
+
+.btree-node.is-leaf {
+  background-color: rgba(100, 116, 139, 0.1);
+  border-color: rgba(100, 116, 139, 0.4);
+}
+
+.btree-node.in-path {
+  border-color: var(--cyan);
+  background-color: rgba(0, 210, 255, 0.12);
+  box-shadow: var(--shadow-glow);
+}
+
+.btree-node-id {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: #64748b;
+  padding: 0 4px;
+}
+
+.btree-key {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.btree-key.is-target {
+  background-color: var(--gold);
+  color: var(--navy);
+}
+
+.btree-more {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #64748b;
+  align-self: center;
+  padding: 0 0.5rem;
+}
+
+/* Cartões das etapas da consulta integrada */
+.step-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: var(--navy-900);
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.step-chip.is-ok {
+  background: var(--success);
+}
+
+.step-chip.is-fail {
+  background: #dc2626;
+}
+
+.code-line {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--navy-900);
+  background: var(--muted);
+  border-radius: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  display: inline-block;
+}
+
+/* Utilitários usados nos cabeçalhos de modal (bg-navy / text-cyan) */
+.bg-navy {
+  background-color: var(--navy);
+}
+
+.text-cyan {
+  color: var(--cyan);
+}
