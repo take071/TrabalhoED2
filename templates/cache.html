@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Cache LRU · Diferencial · GlobalSIM{% endblock %}
+
+{% block content %}
+<section class="page-header-navy bg-grid-tech">
+  <div class="container">
+    <div style="max-width: 760px;">
+      <span class="eyebrow-badge mb-2">Diferencial da equipe &bull; Cache LRU em O(1)</span>
+      <h1 class="display-6 fw-bold text-white font-heading mb-2">Cache LRU de rotas</h1>
+      <p class="mb-0" style="color: #cbd5e1;">
+        As rotas calculadas pelo Dijkstra ficam guardadas em memória. Consultas repetidas são respondidas pelo cache
+        (HIT) e, quando ele enche, a rota menos recentemente usada é descartada.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+
+  <!-- Métricas -->
+  <div class="row g-3 mb-4">
+    {% set cartoes = [
+      ('Ocupação', metricas.tamanho ~ ' / ' ~ metricas.capacidade),
+      ('Hits', metricas.hits),
+      ('Misses', metricas.misses),
+      ('Taxa de acerto', metricas.taxa_acerto ~ '%'),
+      ('Despejos (LRU)', metricas.evicoes),
+      ('Invalidações', metricas.invalidacoes),
+    ] %}
+    {% for rotulo, valor in cartoes %}
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="card card-gs p-3 shadow-elev-1 h-100">
+          <div class="small text-muted">{{ rotulo }}</div>
+          <div class="fs-4 fw-bold font-heading">{{ valor }}</div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="row g-4">
+
+    <!-- Fila MRU -> LRU -->
+    <div class="col-12">
+      <div class="card card-gs p-4 shadow-elev-2">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <h6 class="fw-bold font-heading mb-0">Lista duplamente encadeada (do mais ao menos recente)</h6>
+          <span class="small font-mono {% if valida %}text-success{% else %}text-danger{% endif %}">
+            <i class="bi {% if valida %}bi-patch-check-fill{% else %}bi-x-octagon-fill{% endif %}"></i> {{ mensagem_validacao }}
+          </span>
+        </div>
+        {% if entradas %}
+          <div class="lru-fila">
+            <div class="lru-ponta">MRU<br><small>mais recente</small></div>
+            {% for e in entradas %}
+              <div class="lru-no {% if loop.last and metricas.tamanho == metricas.capacidade %}candidato{% endif %}">
+                <div class="font-mono fw-bold">{{ e.chave }}</div>
+                <div class="small text-muted">
+                  {% if e.valor.encontrada %}{{ e.valor.latencia }} ms{% else %}sem rota{% endif %}
+                </div>
+                <div class="small text-muted font-mono">{{ e.acessos }} hit(s) &bull; {{ e.idade_s }} s</div>
+                {% if e.expira_em_s is not none %}<div class="small text-warning font-mono">expira em {{ e.expira_em_s }} s</div>{% endif %}
+                {% if loop.last and metricas.tamanho == metricas.capacidade %}<div class="small text-danger fw-bold">próximo a sair</div>{% endif %}
+              </div>
+              {% if not loop.last %}<div class="lru-seta">&#8644;</div>{% endif %}
+            {% endfor %}
+            <div class="lru-ponta">LRU<br><small>menos recente</small></div>
+          </div>
+        {% else %}
+          <div class="text-muted small">O cache está vazio. Calcule uma rota na página <a href="{{ url_for('rede') }}">Rede</a> ou faça uma <a href="{{ url_for('consulta') }}">consulta integrada</a>.</div>
+        {% endif %}
+
+        <form action="{{ url_for('rede') }}" method="GET" class="row g-2 align-items-end mt-3 pt-3 border-top">
+          <div class="col-sm-4">
+            <label class="form-label small fw-bold text-muted mb-1" for="cDe">Experimentar: origem</label>
+            <select class="form-select shadow-none" name="de" id="cDe" required>
+              {% for v in vertices %}<option value="{{ v }}" {% if v == 'BR' %}selected{% endif %}>{{ nomes.get(v, v) }} ({{ v }})</option>{% endfor %}
+            </select>
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label small fw-bold text-muted mb-1" for="cPara">destino</label>
+            <select class="form-select shadow-none" name="para" id="cPara" required>
+              {% for v in vertices %}<option value="{{ v }}" {% if v == 'IT' %}selected{% endif %}>{{ nomes.get(v, v) }} ({{ v }})</option>{% endfor %}
+            </select>
+          </div>
+          <div class="col-sm-4 d-grid">
+            <button class="btn btn-azure fw-semibold" type="submit">Calcular rota (volte aqui para ver o cache)</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Como funciona -->
+    <div class="col-lg-6">
+      <div class="card card-gs p-4 shadow-elev-1 h-100">
+        <h6 class="fw-bold font-heading mb-3">Por que as operações são O(1)</h6>
+        <ul class="small text-muted ps-3 mb-3">
+          <li><strong>Índice hash:</strong> chave (<code>ORIGEM-&gt;DESTINO</code>) leva direto ao nó em O(1) médio, sem percorrer a lista.</li>
+          <li><strong>Lista duplamente encadeada com sentinelas:</strong> cada nó conhece o anterior e o próximo; mover para a frente ou remover é religar 4 ponteiros.</li>
+          <li><strong>HIT:</strong> acha o nó pelo índice e o move para a frente (MRU).</li>
+          <li><strong>MISS:</strong> o Dijkstra calcula a rota, que entra na frente; se estava cheio, sai o nó logo antes da cauda (LRU).</li>
+          <li><strong>Invalidação:</strong> conexão criada, alterada ou removida limpa tudo; país removido descarta só as rotas que o usam. Essas operações percorrem a lista, então são O(capacidade).</li>
+        </ul>
+        <div class="small text-muted">
+          Serviço de rotas: {{ servico.consultas }} consultas &bull; {{ servico.execucoes_dijkstra }} execuções do Dijkstra &bull;
+          {{ servico.nos_expandidos }} nós expandidos &bull; <strong>{{ servico.nos_economizados }} nós economizados</strong> pelos HITs.
+        </div>
+      </div>
+    </div>
+
+    <!-- Configuração -->
+    <div class="col-lg-6">
+      <div class="card card-gs p-4 shadow-elev-1 h-100">
+        <h6 class="fw-bold font-heading mb-3">Configuração</h6>
+        <form action="{{ url_for('configurar_cache') }}" method="POST" class="row g-2 mb-3">
+          <div class="col-sm-5">
+            <label class="form-label small fw-bold text-muted mb-1" for="cfgCap">Capacidade (1 a 1000)</label>
+            <input type="number" min="1" max="1000" class="form-control shadow-none font-monospace" id="cfgCap" name="capacidade" value="{{ metricas.capacidade }}" required>
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label small fw-bold text-muted mb-1" for="cfgTtl">TTL em s (0 = sem)</label>
+            <input type="number" min="0" step="any" class="form-control shadow-none font-monospace" id="cfgTtl" name="ttl" value="{{ metricas.ttl_segundos or 0 }}">
+          </div>
+          <div class="col-sm-3 d-grid align-items-end">
+            <button class="btn btn-azure fw-semibold mt-auto" type="submit">Aplicar</button>
+          </div>
+        </form>
+        <p class="small text-muted">Reduzir a capacidade despeja as entradas menos recentes. Com TTL, entradas vencidas são removidas na próxima consulta.</p>
+        <form action="{{ url_for('limpar_cache') }}" method="POST" onsubmit="return confirm('Esvaziar o cache de rotas?');">
+          <button class="btn btn-outline-danger btn-sm" type="submit">Esvaziar cache</button>
+        </form>
+        <hr>
+        <h6 class="fw-bold font-heading mb-2">Benchmark</h6>
+        <p class="small text-muted mb-2">Executa a mesma carga de consultas (com destinos populares) sem cache e com caches de vários tamanhos. Não altera o cache acima.</p>
+        <form action="{{ url_for('benchmark_cache') }}" method="POST" class="row g-2">
+          <div class="col-sm-5">
+            <label class="form-label small fw-bold text-muted mb-1" for="bmQtd">Consultas (100 a 20000)</label>
+            <input type="number" min="100" max="20000" class="form-control shadow-none font-monospace" id="bmQtd" name="quantidade" value="{{ benchmark.consultas if benchmark else 2000 }}" required>
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label small fw-bold text-muted mb-1" for="bmSem">Semente</label>
+            <input type="number" class="form-control shadow-none font-monospace" id="bmSem" name="semente" value="{{ benchmark.semente if benchmark else 42 }}" required>
+          </div>
+          <div class="col-sm-3 d-grid">
+            <button class="btn btn-azure fw-semibold mt-auto" type="submit">Executar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Resultado do benchmark -->
+    {% if benchmark %}
+    <div class="col-12">
+      <div class="card card-gs p-4 shadow-elev-2">
+        <h6 class="fw-bold font-heading mb-1">Resultado: sem cache x Cache LRU</h6>
+        <p class="small text-muted">
+          {{ benchmark.consultas }} consultas sobre {{ benchmark.pares_distintos }} pares possíveis (popularidade desigual, semente {{ benchmark.semente }}).
+          Sem cache: <strong>{{ benchmark.base_nos }} nós expandidos</strong> em {{ benchmark.base_tempo_ms }} ms.
+          Os nós expandidos são a medida confiável; o tempo varia com a máquina e, como o grafo é pequeno, o Dijkstra já é muito rápido, então com caches minúsculos o ganho de tempo pode ser nulo ou negativo.
+        </p>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle small">
+            <thead>
+              <tr><th>Capacidade</th><th>Hits</th><th>Misses</th><th>Taxa de acerto</th><th>Despejos</th><th>Dijkstra executado</th><th>Nós expandidos</th><th>Redução de nós</th><th>Tempo</th><th>Ganho de tempo</th></tr>
+            </thead>
+            <tbody>
+              {% for l in benchmark.linhas %}
+                <tr class="font-mono">
+                  <td class="fw-bold">{{ l.capacidade }}</td><td>{{ l.hits }}</td><td>{{ l.misses }}</td>
+                  <td>{{ l.taxa_acerto }}%</td><td>{{ l.evicoes }}</td><td>{{ l.execucoes_dijkstra }}</td>
+                  <td>{{ l.nos_expandidos }}</td><td class="text-success">{{ l.reducao_nos }}%</td>
+                  <td>{{ l.tempo_ms }} ms</td><td>{{ l.ganho }}x</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <h6 class="fw-bold font-heading mt-4 mb-1">Evidência do O(1): custo por operação x capacidade</h6>
+        <p class="small text-muted">Cada linha executa obter/colocar/obter com o cache cheio (forçando despejos). Se o custo fosse O(n), cresceria 1000x entre 100 e 100.000; aqui ele varia pouco (efeitos de memória/CPU).</p>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle small mb-0" style="max-width: 520px;">
+            <thead><tr><th>Capacidade</th><th>Operações</th><th>ns por operação</th></tr></thead>
+            <tbody>
+              {% for e in benchmark.escalabilidade %}
+                <tr class="font-mono"><td>{{ e.capacidade }}</td><td>{{ e.operacoes }}</td><td class="fw-bold">{{ e.ns_por_operacao }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Eventos -->
+    <div class="col-12">
+      <div class="card card-gs p-4 shadow-elev-1">
+        <h6 class="fw-bold font-heading mb-3">Últimos eventos do cache</h6>
+        {% if metricas.eventos %}
+          <div class="table-responsive">
+            <table class="table table-sm align-middle small mb-0">
+              <thead><tr><th>#</th><th>Evento</th><th>Chave</th><th>Detalhe</th></tr></thead>
+              <tbody>
+                {% for ev in metricas.eventos %}
+                  <tr>
+                    <td class="font-mono text-muted">{{ ev.n }}</td>
+                    <td>
+                      {% if ev.tipo == 'HIT' %}<span class="badge-5g">HIT</span>
+                      {% elif ev.tipo == 'MISS' %}<span class="badge-collision">MISS</span>
+                      {% else %}<span class="badge-code">{{ ev.tipo }}</span>{% endif %}
+                    </td>
+                    <td class="font-mono">{{ ev.chave }}</td>
+                    <td class="text-muted">{{ ev.detalhe }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="small text-muted">Nenhum evento registrado ainda.</div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{
+  "arestas": [
+    {
+      "origem": "BR",
+      "destino": "US",
+      "latencia": 80
+    },
+    {
+      "origem": "BR",
+      "destino": "PT",
+      "latencia": 120
+    },
+    {
+      "origem": "PT",
+      "destino": "ES",
+      "latencia": 30
+    },
+    {
+      "origem": "PT",
+      "destino": "FR",
+      "latencia": 40
+    },
+    {
+      "origem": "FR",
+      "destino": "IT",
+      "latencia": 25
+    },
+    {
+      "origem": "US",
+      "destino": "CA",
+      "latencia": 20
+    },
+    {
+      "origem": "CA",
+      "destino": "JP",
+      "latencia": 110
+    }
+  ]
+}

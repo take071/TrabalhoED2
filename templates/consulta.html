@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+
+{% block title %}Consulta Integrada · GlobalSIM{% endblock %}
+
+{% block content %}
+<!-- Cabeçalho da Página em Deep Navy -->
+<section class="page-header-navy bg-grid-tech">
+  <div class="container">
+    <div style="max-width: 680px;">
+      <span class="eyebrow-badge mb-2">Etapas 2 e 3 &bull; Árvore B &times; Tabela Hash &times; Grafo</span>
+      <h1 class="display-6 fw-bold text-white font-heading mb-2">Consulta de conectividade</h1>
+      <p class="mb-0" style="color: #cbd5e1;">
+        Informe o cliente, a origem e o destino. O cliente é localizado na Árvore B, a cobertura do destino na Tabela Hash e a rota de menor latência é calculada com Dijkstra no Grafo (via Cache LRU).
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+
+      <!-- Formulário (consulta somente leitura: GET) -->
+      <div class="card card-gs p-3 mb-4 shadow-elev-2">
+        <form action="{{ url_for('consulta') }}" method="GET">
+          <div class="row g-2 align-items-end">
+            <div class="col-sm-3">
+              <label for="campoCliente" class="form-label small fw-bold text-muted mb-1">ID do cliente</label>
+              <input
+                type="text"
+                inputmode="numeric"
+                class="form-control font-monospace fw-bold shadow-none py-2"
+                id="campoCliente"
+                name="cliente"
+                placeholder="Ex: 58372"
+                value="{{ cliente_valor }}"
+                required
+              >
+            </div>
+            <div class="col-sm-3">
+              <label for="campoOrigem" class="form-label small fw-bold text-muted mb-1">País de origem</label>
+              <select class="form-select shadow-none py-2" id="campoOrigem" name="origem" required>
+                {% for p in paises %}
+                  <option value="{{ p.codigo }}" {% if p.codigo == origem_valor %}selected{% endif %}>{{ p.pais }} ({{ p.codigo }})</option>
+                {% endfor %}
+                {% if origem_valor and not paises|selectattr('codigo', 'equalto', origem_valor)|list %}
+                  <option value="{{ origem_valor }}" selected>{{ origem_valor }} (não cadastrado)</option>
+                {% endif %}
+              </select>
+            </div>
+            <div class="col-sm-4">
+              <label for="campoDestino" class="form-label small fw-bold text-muted mb-1">País de destino</label>
+              <select class="form-select shadow-none py-2" id="campoDestino" name="destino" required>
+                <option value="" disabled {% if not destino_valor %}selected{% endif %}>Selecione...</option>
+                {% for p in paises %}
+                  <option value="{{ p.codigo }}" {% if p.codigo == destino_valor %}selected{% endif %}>{{ p.pais }} ({{ p.codigo }})</option>
+                {% endfor %}
+                {% if destino_valor and not paises|selectattr('codigo', 'equalto', destino_valor)|list %}
+                  <option value="{{ destino_valor }}" selected>{{ destino_valor }} (não cadastrado)</option>
+                {% endif %}
+              </select>
+            </div>
+            <div class="col-sm-2 d-grid">
+              <button class="btn btn-azure py-2 fw-semibold" type="submit">Consultar</button>
+            </div>
+          </div>
+        </form>
+
+        <div class="d-flex align-items-center flex-wrap gap-2 mt-3 pt-3 border-top" style="border-color: var(--border) !important;">
+          <span class="small text-muted me-1">Exemplos:</span>
+          <a class="btn btn-sm btn-outline-custom font-mono py-0 px-2" style="font-size: 0.75rem;" href="{{ url_for('consulta', cliente=58372, origem='BR', destino='IT') }}">58372 &rarr; IT</a>
+          <a class="btn btn-sm btn-outline-custom font-mono py-0 px-2" style="font-size: 0.75rem;" href="{{ url_for('consulta', cliente=58372, origem='BR', destino='US') }}">58372 &rarr; US (pacote incompatível)</a>
+          <a class="btn btn-sm btn-outline-danger font-mono py-0 px-2" style="font-size: 0.75rem;" href="{{ url_for('consulta', cliente=58372, origem='BR', destino='ZZ') }}">58372 &rarr; ZZ (não atendido)</a>
+        </div>
+      </div>
+
+      {% if consultado and not resultado %}
+        <div class="card card-gs p-4 border-0 shadow-sm mb-4" style="border-left: 4px solid var(--gold) !important;">
+          <div class="fw-bold font-heading text-dark">Informe o cliente e o destino</div>
+          <div class="small text-muted">A consulta integrada precisa dos dois dados para consultar as duas estruturas.</div>
+        </div>
+      {% endif %}
+
+      {% if resultado %}
+        {% set c = resultado.cliente %}
+        {% set pais = resultado.pais %}
+        {% set pacote = resultado.pacote %}
+
+        <!-- Etapa 1: Árvore B -->
+        <div class="card card-gs p-4 mb-3 shadow-elev-1">
+          <div class="d-flex align-items-start gap-3">
+            <span class="step-chip {% if c %}is-ok{% else %}is-fail{% endif %}">1</span>
+            <div class="flex-grow-1">
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                <h6 class="fw-bold font-heading text-dark mb-0">Árvore B &mdash; cliente</h6>
+                <span class="code-line">arvore.buscar({{ resultado.cliente_id if resultado.cliente_id else '?' }})</span>
+              </div>
+              {% if c %}
+                <div class="row g-3">
+                  <div class="col-sm-4">
+                    <div class="small text-muted">Cliente</div>
+                    <div class="fw-bold text-dark">{{ c.nome }}</div>
+                    <div class="small text-muted">{{ c.email }}</div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="small text-muted">eSIM</div>
+                    <div class="fw-bold text-dark font-mono">{{ c.esim or '—' }}</div>
+                    <div class="mt-1"><span class="badge-status st-{{ c.status }}">{{ c.status }}</span></div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="small text-muted">Pacote</div>
+                    <div class="fw-bold text-dark">{{ pacote.nome if pacote else '—' }}</div>
+                    <div class="small text-muted font-mono">{% if c.pacote %}código {{ c.pacote }}{% endif %}</div>
+                  </div>
+                </div>
+              {% elif resultado.cliente_id is none %}
+                <div class="small text-muted">O ID informado não é um número válido.</div>
+              {% else %}
+                <div class="small text-muted">Nenhum cliente com o ID {{ resultado.cliente_id }}.</div>
+              {% endif %}
+              {% if resultado.arvore %}
+                <div class="small text-primary font-mono mt-3" style="font-size: 0.75rem;">
+                  {{ resultado.arvore.acessos }} nó(s) visitado(s) &bull; {{ resultado.arvore.comparacoes }} comparações &bull;
+                  caminho:
+                  {% for no in resultado.arvore.caminho %}#{{ no }}{% if not loop.last %} &rarr; {% endif %}{% endfor %}
+                  &bull; <a href="{{ url_for('arvore_b', id=resultado.cliente_id) }}">ver na árvore</a>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Etapa 2: Tabela Hash -->
+        <div class="card card-gs p-4 mb-3 shadow-elev-1">
+          <div class="d-flex align-items-start gap-3">
+            <span class="step-chip {% if pais %}is-ok{% else %}is-fail{% endif %}">2</span>
+            <div class="flex-grow-1">
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                <h6 class="fw-bold font-heading text-dark mb-0">Tabela Hash &mdash; cobertura do destino</h6>
+                <span class="code-line">tabela.buscar("{{ resultado.destino }}")</span>
+              </div>
+              {% if pais %}
+                <div class="row g-3">
+                  <div class="col-sm-4">
+                    <div class="small text-muted">Destino</div>
+                    <div class="fw-bold text-dark">{{ pais.pais }} <span class="badge-code ms-1">{{ pais.codigo }}</span></div>
+                    <div class="small text-muted">{{ pais.regiao }}</div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="small text-muted">Operadora</div>
+                    <div class="fw-bold text-dark">{{ pais.operadora }}</div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="small text-muted">Cobertura</div>
+                    <div class="fw-bold text-success">Disponível</div>
+                    <div class="mt-1">
+                      {% if '5G' in pais.tecnologia %}<span class="badge-5g">5G</span>{% else %}<span class="badge-4g">4G/LTE</span>{% endif %}
+                    </div>
+                  </div>
+                </div>
+              {% else %}
+                <div class="small text-muted">O código "{{ resultado.destino }}" não está na Tabela Hash: destino não atendido.</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Etapa 3: Pacote x destino -->
+        <div class="card card-gs p-4 mb-4 shadow-elev-1">
+          <div class="d-flex align-items-start gap-3">
+            <span class="step-chip {% if resultado.compativel %}is-ok{% elif resultado.compativel is none %}{% else %}is-fail{% endif %}">3</span>
+            <div class="flex-grow-1">
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                <h6 class="fw-bold font-heading text-dark mb-0">Pacote do cliente &times; região do destino</h6>
+              </div>
+              {% if pacote %}
+                <div class="row g-3">
+                  <div class="col-sm-4">
+                    <div class="small text-muted">Pacote</div>
+                    <div class="fw-bold text-dark">{{ pacote.nome }}</div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="small text-muted">Franquia e validade</div>
+                    <div class="fw-bold text-dark">{{ pacote.dados_gb }} GB &bull; {{ pacote.validade_dias }} dias</div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="small text-muted">Região do pacote</div>
+                    <div class="fw-bold text-dark">{{ pacote.regiao }}</div>
+                    {% if resultado.compativel is not none %}
+                      <div class="small {% if resultado.compativel %}text-success{% else %}text-danger{% endif %}">
+                        {% if resultado.compativel %}Cobre {{ pais.regiao }}{% else %}Não cobre {{ pais.regiao }}{% endif %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% else %}
+                <div class="small text-muted">Sem pacote para comparar com o destino.</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Etapa 4: Grafo + Cache LRU -->
+        {% set rota = resultado.rota %}
+        <div class="card card-gs p-4 mb-4 shadow-elev-1">
+          <div class="d-flex align-items-start gap-3">
+            <span class="step-chip {% if rota and rota.encontrada %}is-ok{% else %}is-fail{% endif %}">4</span>
+            <div class="flex-grow-1">
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                <h6 class="fw-bold font-heading text-dark mb-0">Grafo &mdash; rota de menor latência (Dijkstra + Cache LRU)</h6>
+                <span class="code-line">rotas.consultar("{{ resultado.origem }}", "{{ resultado.destino }}")</span>
+              </div>
+              {% if rota and rota.encontrada %}
+                <div class="fw-bold text-dark mb-1">
+                  {% for c in rota.caminho %}{{ nomes.get(c, c) }}{% if not loop.last %} &rarr; {% endif %}{% endfor %}
+                </div>
+                <div class="d-flex flex-wrap align-items-center gap-3">
+                  <span class="fs-5 fw-bold font-heading">{{ rota.latencia }} ms</span>
+                  {% if rota.cache == 'HIT' %}<span class="badge-5g">CACHE HIT</span>
+                  {% else %}<span class="badge-collision">CACHE MISS &middot; Dijkstra executado</span>{% endif %}
+                </div>
+                <div class="small text-primary font-mono mt-3" style="font-size: 0.75rem;">
+                  resposta em {{ (rota.tempo_ns / 1000)|round(1) }} µs &bull; {{ rota.nos_expandidos }} nós expandidos{% if rota.cache == 'HIT' %} (no cálculo original, evitado agora){% endif %}
+                  &bull; <a href="{{ url_for('rede', de=resultado.origem, para=resultado.destino) }}">ver no grafo</a>
+                  &bull; <a href="{{ url_for('cache') }}">ver o cache</a>
+                </div>
+              {% elif not resultado.origem_pais %}
+                <div class="small text-muted">A origem "{{ resultado.origem }}" não está na Tabela Hash: não há vértice correspondente no grafo.</div>
+              {% elif not resultado.pais %}
+                <div class="small text-muted">Sem destino atendido, a rota não foi calculada.</div>
+              {% else %}
+                <div class="small text-muted">Não existe caminho entre {{ resultado.origem_pais.pais }} e {{ resultado.pais.pais }} na rede atual.</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Conclusão -->
+        {% if resultado.apto %}
+          <div class="card card-gs overflow-hidden shadow-elev-3" style="border-left: 4px solid var(--success) !important;">
+            <div class="p-4">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                <h5 class="fw-bold font-heading text-dark mb-0">Conectividade disponível</h5>
+              </div>
+              <p class="text-muted small mb-3">
+                {{ c.nome }} pode usar o eSIM {{ c.esim }} em {{ pais.pais }} com o pacote {{ pacote.nome }}
+                ({{ pacote.dados_gb }} GB, {{ pacote.validade_dias }} dias), em rede {{ pais.tecnologia }}.
+              </p>
+              <div class="code-line d-block" style="white-space: pre-line;">CONSULTA DE CONECTIVIDADE
+Cliente: {{ c.nome }}  |  eSIM: {{ c.esim }}  |  Status: {{ c.status|capitalize }}
+Pacote: {{ pacote.nome }}  |  Dados: {{ pacote.dados_gb }} GB  |  Validade: {{ pacote.validade_dias }} dias
+Destino: {{ pais.pais }}  |  Cobertura: Disponível  |  Tecnologia: {{ pais.tecnologia }}
+Melhor rota: {% for cod in resultado.rota.caminho %}{{ nomes.get(cod, cod) }}{% if not loop.last %} → {% endif %}{% endfor %}
+Latência estimada: {{ resultado.rota.latencia }} ms</div>
+            </div>
+          </div>
+        {% else %}
+          <div class="card card-gs overflow-hidden shadow-elev-3" style="border-left: 4px solid var(--gold) !important;">
+            <div class="p-4">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-exclamation-triangle-fill text-warning fs-5"></i>
+                <h5 class="fw-bold font-heading text-dark mb-0">Conectividade indisponível</h5>
+              </div>
+              <ul class="small text-muted mb-3 ps-3">
+                {% for p in resultado.pendencias %}<li>{{ p }}</li>{% endfor %}
+              </ul>
+              {% if c %}
+                <a href="{{ url_for('clientes', id=c.id) }}" class="btn btn-sm btn-outline-custom">Abrir cadastro do cliente</a>
+              {% endif %}
+              {% if not pais %}
+                <a href="{{ url_for('paises') }}" class="btn btn-sm btn-outline-custom">Gerenciar países</a>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}

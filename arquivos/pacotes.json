@@ -1,0 +1,37 @@
+[
+  {
+    "codigo": 101,
+    "nome": "Europa Basic",
+    "regiao": "Europa",
+    "dados_gb": 5,
+    "validade_dias": 15
+  },
+  {
+    "codigo": 102,
+    "nome": "Europa Plus",
+    "regiao": "Europa",
+    "dados_gb": 10,
+    "validade_dias": 30
+  },
+  {
+    "codigo": 201,
+    "nome": "América Basic",
+    "regiao": "América",
+    "dados_gb": 5,
+    "validade_dias": 15
+  },
+  {
+    "codigo": 202,
+    "nome": "América Plus",
+    "regiao": "América",
+    "dados_gb": 15,
+    "validade_dias": 30
+  },
+  {
+    "codigo": 301,
+    "nome": "Global",
+    "regiao": "Global",
+    "dados_gb": 20,
+    "validade_dias": 30
+  }
+]
